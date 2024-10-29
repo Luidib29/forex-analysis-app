@@ -70,28 +70,31 @@ def analisi_forex(symbol, pair_name):
     # Logica dei segnali
     df['Segnale'] = 'ATTENDI'
     
+    # Logica dei segnali
+    df['Segnale'] = 'ATTENDI'
+    
     for i in range(len(df)):
         rsi = df['RSI'].iloc[i]
         macd = df['MACD'].iloc[i]
         signal = df['Signal'].iloc[i]
         
-       if rsi < 35:  # Aumentato da 30
-    if macd > signal:
-        df.loc[df.index[i], 'Segnale'] = 'COMPRA'
-    else:
-        df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipervenduto ma MACD negativo)'
-elif rsi > 65:  # Diminuito da 70
-    if macd < signal:
-        df.loc[df.index[i], 'Segnale'] = 'VENDI'
-    else:
-        df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipercomprato ma MACD positivo)'
-else:
-    if macd > signal and rsi > 35:  # Diminuito da 40
-        df.loc[df.index[i], 'Segnale'] = 'COMPRA'
-    elif macd < signal and rsi < 65:  # Aumentato da 60
-        df.loc[df.index[i], 'Segnale'] = 'VENDI'
-    else:
-        df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
+        if rsi < 35:  # Aumentato da 30
+            if macd > signal:
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipervenduto ma MACD negativo)'
+        elif rsi > 65:  # Diminuito da 70
+            if macd < signal:
+                df.loc[df.index[i], 'Segnale'] = 'VENDI'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipercomprato ma MACD positivo)'
+        else:
+            if macd > signal and rsi > 35:  # Diminuito da 40
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA'
+            elif macd < signal and rsi < 65:  # Aumentato da 60
+                df.loc[df.index[i], 'Segnale'] = 'VENDI'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
     
     return df
     # Analisi per ogni coppia
