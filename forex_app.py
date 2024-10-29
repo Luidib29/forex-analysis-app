@@ -15,9 +15,18 @@ st.title('📊 Analisi Tecnica Forex')
 
 # Dizionario delle coppie forex
 forex_pairs = {
+    # Dizionario delle coppie forex
+forex_pairs = {
     'EUR/USD': 'EURUSD=X',
     'GBP/USD': 'GBPUSD=X',
-    'USD/JPY': 'USDJPY=X'
+    'USD/JPY': 'USDJPY=X',
+    'AUD/USD': 'AUDUSD=X',
+    'USD/CAD': 'USDCAD=X',
+    'USD/CHF': 'USDCHF=X',
+    'NZD/USD': 'NZDUSD=X',
+    'EUR/GBP': 'EURGBP=X',
+    'EUR/JPY': 'EURJPY=X'
+}
 }
 
 # Selezione periodo
