@@ -13,8 +13,7 @@ st.set_page_config(
 # Titolo dell'app
 st.title('📊 Analisi Tecnica Forex')
 
-
-    # Dizionario delle coppie forex
+# Dizionario delle coppie forex
 forex_pairs = {
     'EUR/USD': 'EURUSD=X',
     'GBP/USD': 'GBPUSD=X',
@@ -27,14 +26,12 @@ forex_pairs = {
     'EUR/JPY': 'EURJPY=X'
 }
 
-
 # Selezione periodo
 periodo = st.selectbox(
     'Seleziona il periodo di analisi:',
     ['1mo', '3mo', '6mo', '1y']
 )
 
-# Funzione di analisi (il tuo codice esistente)
 def analisi_forex(symbol, pair_name):
     # Scarica i dati
     df = yf.download(symbol, period=periodo)
@@ -60,6 +57,7 @@ def analisi_forex(symbol, pair_name):
         return 100 - (100 / (1 + rs))
     
     df['RSI'] = calcola_rsi(df)
+    
     # Calcola il MACD
     df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
     df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
@@ -70,34 +68,32 @@ def analisi_forex(symbol, pair_name):
     # Logica dei segnali
     df['Segnale'] = 'ATTENDI'
     
-    # Logica dei segnali
-    df['Segnale'] = 'ATTENDI'
-    
     for i in range(len(df)):
         rsi = df['RSI'].iloc[i]
         macd = df['MACD'].iloc[i]
         signal = df['Signal'].iloc[i]
         
-        if rsi < 35:  # Aumentato da 30
+        if rsi < 35:  # Più sensibile
             if macd > signal:
                 df.loc[df.index[i], 'Segnale'] = 'COMPRA'
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipervenduto ma MACD negativo)'
-        elif rsi > 65:  # Diminuito da 70
+        elif rsi > 65:  # Più sensibile
             if macd < signal:
                 df.loc[df.index[i], 'Segnale'] = 'VENDI'
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipercomprato ma MACD positivo)'
         else:
-            if macd > signal and rsi > 35:  # Diminuito da 40
+            if macd > signal and rsi > 35:
                 df.loc[df.index[i], 'Segnale'] = 'COMPRA'
-            elif macd < signal and rsi < 65:  # Aumentato da 60
+            elif macd < signal and rsi < 65:
                 df.loc[df.index[i], 'Segnale'] = 'VENDI'
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
     
     return df
-    # Analisi per ogni coppia
+
+# Analisi per ogni coppia
 for pair_name, symbol in forex_pairs.items():
     st.header(f'Analisi {pair_name}')
     
