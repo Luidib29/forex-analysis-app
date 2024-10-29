@@ -13,8 +13,7 @@ st.set_page_config(
 # Titolo dell'app
 st.title('📊 Analisi Tecnica Forex')
 
-# Dizionario delle coppie forex
-forex_pairs = {
+
     # Dizionario delle coppie forex
 forex_pairs = {
     'EUR/USD': 'EURUSD=X',
@@ -27,7 +26,7 @@ forex_pairs = {
     'EUR/GBP': 'EURGBP=X',
     'EUR/JPY': 'EURJPY=X'
 }
-}
+
 
 # Selezione periodo
 periodo = st.selectbox(
