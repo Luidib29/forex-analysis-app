@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # Configura client Tiingo
 config = {}
 config['session'] = True
-config['api_key'] = st.secrets["e01a41babcd49cf76f97fdc98c6bf944abdd154e"]
+config['api_key'] = st.secrets["TIINGO_API_KEY"]
 client = TiingoClient(config)
 
 # Configurazione pagina
@@ -20,8 +20,7 @@ st.set_page_config(
 # Titolo dell'app
 st.title('📊 Analisi Tecnica Forex')
 
-
-    # Dizionario delle coppie forex
+# Dizionario delle coppie forex
 forex_pairs = {
     'EUR/USD': 'eurusd',
     'GBP/USD': 'gbpusd',
@@ -34,34 +33,32 @@ forex_pairs = {
     'EUR/JPY': 'eurjpy'
 }
 
-
 # Selezione periodo
 periodo = st.selectbox(
     'Seleziona il periodo di analisi (in giorni):',
     [30, 90, 180, 365]
 )
-
-
 def analisi_forex(symbol, pair_name):
     # Scarica i dati da Tiingo
     end_date = datetime.now()
     start_date = end_date - timedelta(days=periodo)
+    
     # Scarica e prepara i dati da Tiingo
-df = pd.DataFrame(client.get_forex_price_history(
-    symbol,
-    startDate=start_date,
-    endDate=end_date,
-    resampleFreq='1day'
-))
+    df = pd.DataFrame(client.get_forex_price_history(
+        symbol,
+        startDate=start_date,
+        endDate=end_date,
+        resampleFreq='1day'
+    ))
 
-# Prepara il DataFrame
-df.index = pd.to_datetime(df.index)
-df = df.rename(columns={
-    'adjClose': 'Close',
-    'adjHigh': 'High',
-    'adjLow': 'Low',
-    'adjOpen': 'Open'
-})
+    # Prepara il DataFrame
+    df.index = pd.to_datetime(df.index)
+    df = df.rename(columns={
+        'adjClose': 'Close',
+        'adjHigh': 'High',
+        'adjLow': 'Low',
+        'adjOpen': 'Open'
+    })
     
     # Calcola le medie mobili
     df['MA20'] = df['Close'].rolling(window=20).mean()
@@ -76,7 +73,8 @@ df = df.rename(columns={
         return 100 - (100 / (1 + rs))
     
     df['RSI'] = calcola_rsi(df)
-    # Aggiungi qui i Pivot Points Fibonacci
+
+    # Calcolo Pivot Points Fibonacci
     df['PP'] = (df['High'].shift(1) + df['Low'].shift(1) + df['Close'].shift(1)) / 3
     daily_range = df['High'].shift(1) - df['Low'].shift(1)
     
@@ -87,7 +85,6 @@ df = df.rename(columns={
     df['S1'] = df['PP'] - (0.382 * daily_range)
     df['S2'] = df['PP'] - (0.618 * daily_range)
     df['S3'] = df['PP'] - (1.000 * daily_range)
-
     # Calcola il MACD
     df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
     # Logica dei segnali con Fibonacci
@@ -148,7 +145,7 @@ df = df.rename(columns={
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
         
-        # Segnali di VENDI
+        # Segnali di VENDITA
         elif (rsi > 65 and (prezzo >= r1)):  
             if macd < signal:
                 df.loc[df.index[i], 'Segnale'] = 'VENDI (Resistenza Fib)'
@@ -234,3 +231,6 @@ for pair_name, symbol in forex_pairs.items():
 # Aggiungi pulsante di refresh
 if st.button('Aggiorna Dati'):
     st.rerun()
+
+
+                
