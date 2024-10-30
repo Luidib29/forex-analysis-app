@@ -20,8 +20,7 @@ st.set_page_config(
 # Titolo dell'app
 st.title('📊 Analisi Tecnica Forex')
 
-# Dizionario delle coppie forex
-forex_pairs = {
+
     # Dizionario delle coppie forex
 forex_pairs = {
     'EUR/USD': 'eurusd',
@@ -64,14 +63,6 @@ df = df.rename(columns={
     'adjOpen': 'Open'
 })
     
-    # Rinomina le colonne per match con il codice esistente
-    df = df.rename(columns={
-        'adjClose': 'Close',
-        'adjHigh': 'High',
-        'adjLow': 'Low',
-        'adjOpen': 'Open'
-    })
-    
     # Calcola le medie mobili
     df['MA20'] = df['Close'].rolling(window=20).mean()
     df['MA50'] = df['Close'].rolling(window=50).mean()
@@ -85,7 +76,53 @@ df = df.rename(columns={
         return 100 - (100 / (1 + rs))
     
     df['RSI'] = calcola_rsi(df)
+    # Aggiungi qui i Pivot Points Fibonacci
+    df['PP'] = (df['High'].shift(1) + df['Low'].shift(1) + df['Close'].shift(1)) / 3
+    daily_range = df['High'].shift(1) - df['Low'].shift(1)
     
+    # Livelli Fibonacci
+    df['R1'] = df['PP'] + (0.382 * daily_range)
+    df['R2'] = df['PP'] + (0.618 * daily_range)
+    df['R3'] = df['PP'] + (1.000 * daily_range)
+    df['S1'] = df['PP'] - (0.382 * daily_range)
+    df['S2'] = df['PP'] - (0.618 * daily_range)
+    df['S3'] = df['PP'] - (1.000 * daily_range)
+
+    # Calcola il MACD
+    df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
+    # Logica dei segnali con Fibonacci
+    df['Segnale'] = 'ATTENDI'
+    for i in range(len(df)):
+        rsi = df['RSI'].iloc[i]
+        macd = df['MACD'].iloc[i]
+        signal = df['Signal'].iloc[i]
+        prezzo = df['Close'].iloc[i]
+        s1 = df['S1'].iloc[i]
+        r1 = df['R1'].iloc[i]
+        
+        # Segnali di COMPRA
+        if (rsi < 35 and (prezzo <= s1)):  
+            if macd > signal:
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Supporto Fib)'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+        
+        # Segnali di VENDI
+        elif (rsi > 65 and (prezzo >= r1)):  
+            if macd < signal:
+                df.loc[df.index[i], 'Segnale'] = 'VENDI (Resistenza Fib)'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+        
+        # Zona neutrale con conferme Fibonacci
+        else:
+            if macd > signal and rsi > 35 and prezzo > s1:
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Trend + Fib)'
+            elif macd < signal and rsi < 65 and prezzo < r1:
+                df.loc[df.index[i], 'Segnale'] = 'VENDI (Trend + Fib)'
+            else:
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
+
     # Calcola il MACD
     df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
     df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
@@ -93,29 +130,37 @@ df = df.rename(columns={
     df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
     df['MACD_Hist'] = df['MACD'] - df['Signal']
     
-    # Logica dei segnali
+    # Logica dei segnali con Fibonacci
     df['Segnale'] = 'ATTENDI'
     
     for i in range(len(df)):
         rsi = df['RSI'].iloc[i]
         macd = df['MACD'].iloc[i]
         signal = df['Signal'].iloc[i]
+        prezzo = df['Close'].iloc[i]
+        s1 = df['S1'].iloc[i]
+        r1 = df['R1'].iloc[i]
         
-        if rsi < 35:  # Più sensibile
+        # Segnali di COMPRA
+        if (rsi < 35 and (prezzo <= s1)):  
             if macd > signal:
-                df.loc[df.index[i], 'Segnale'] = 'COMPRA'
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Supporto Fib)'
             else:
-                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipervenduto ma MACD negativo)'
-        elif rsi > 65:  # Più sensibile
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+        
+        # Segnali di VENDI
+        elif (rsi > 65 and (prezzo >= r1)):  
             if macd < signal:
-                df.loc[df.index[i], 'Segnale'] = 'VENDI'
+                df.loc[df.index[i], 'Segnale'] = 'VENDI (Resistenza Fib)'
             else:
-                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI ipercomprato ma MACD positivo)'
+                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+        
+        # Zona neutrale con conferme Fibonacci
         else:
-            if macd > signal and rsi > 35:
-                df.loc[df.index[i], 'Segnale'] = 'COMPRA'
-            elif macd < signal and rsi < 65:
-                df.loc[df.index[i], 'Segnale'] = 'VENDI'
+            if macd > signal and rsi > 35 and prezzo > s1:
+                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Trend + Fib)'
+            elif macd < signal and rsi < 65 and prezzo < r1:
+                df.loc[df.index[i], 'Segnale'] = 'VENDI (Trend + Fib)'
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
     
@@ -130,12 +175,20 @@ for pair_name, symbol in forex_pairs.items():
     # Crea i grafici
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12,12))
     
-    # Grafico superiore con prezzo e medie mobili
-    ax1.plot(df.index, df['Close'], label=pair_name)
-    ax1.plot(df.index, df['MA20'], label='MA20')
-    ax1.plot(df.index, df['MA50'], label='MA50')
-    ax1.set_title('Prezzo e Medie Mobili')
-    ax1.legend()
+# Grafico superiore con prezzo, medie mobili e livelli Fibonacci
+    ax1.plot(df.index, df['Close'], label=pair_name, color='blue')
+    ax1.plot(df.index, df['MA20'], label='MA20', linewidth=1, alpha=0.7)
+    ax1.plot(df.index, df['MA50'], label='MA50', linewidth=1, alpha=0.7)
+    
+    # Aggiungi livelli Fibonacci
+    ax1.plot(df.index, df['R1'], '--', label='R1 (0.382)', color='red', alpha=0.5)
+    ax1.plot(df.index, df['R2'], '--', label='R2 (0.618)', color='red', alpha=0.3)
+    ax1.plot(df.index, df['PP'], '-', label='Pivot', color='purple', alpha=0.5)
+    ax1.plot(df.index, df['S1'], '--', label='S1 (-0.382)', color='green', alpha=0.5)
+    ax1.plot(df.index, df['S2'], '--', label='S2 (-0.618)', color='green', alpha=0.3)
+    
+    ax1.set_title('Prezzo con Medie Mobili e Livelli Fibonacci')
+    ax1.legend(loc='upper left', bbox_to_anchor=(1.05, 1))
     ax1.grid(True)
     
     # Grafico centrale con RSI
