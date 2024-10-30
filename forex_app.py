@@ -1,8 +1,15 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import yfinance as yf
 import matplotlib.pyplot as plt
+from tiingo import TiingoClient
+from datetime import datetime, timedelta
+
+# Configura client Tiingo
+config = {}
+config['session'] = True
+config['api_key'] = st.secrets["e01a41babcd49cf76f97fdc98c6bf944abdd154e"]
+client = TiingoClient(config)
 
 # Configurazione pagina
 st.set_page_config(
@@ -15,33 +22,54 @@ st.title('📊 Analisi Tecnica Forex')
 
 # Dizionario delle coppie forex
 forex_pairs = {
-    'EUR/USD': 'EURUSD=X',
-    'GBP/USD': 'GBPUSD=X',
-    'USD/JPY': 'USDJPY=X',
-    'AUD/USD': 'AUDUSD=X',
-    'USD/CAD': 'USDCAD=X',
-    'USD/CHF': 'USDCHF=X',
-    'NZD/USD': 'NZDUSD=X',
-    'EUR/GBP': 'EURGBP=X',
-    'EUR/JPY': 'EURJPY=X'
+    # Dizionario delle coppie forex
+forex_pairs = {
+    'EUR/USD': 'eurusd',
+    'GBP/USD': 'gbpusd',
+    'USD/JPY': 'usdjpy',
+    'AUD/USD': 'audusd',
+    'USD/CAD': 'usdcad',
+    'USD/CHF': 'usdchf',
+    'NZD/USD': 'nzdusd',
+    'EUR/GBP': 'eurgbp',
+    'EUR/JPY': 'eurjpy'
 }
+
 
 # Selezione periodo
 periodo = st.selectbox(
-    'Seleziona il periodo di analisi:',
-    ['1mo', '3mo', '6mo', '1y']
+    'Seleziona il periodo di analisi (in giorni):',
+    [30, 90, 180, 365]
 )
 
+
 def analisi_forex(symbol, pair_name):
-    # Scarica i dati
-    df = yf.download(symbol, period=periodo)
+    # Scarica i dati da Tiingo
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=periodo)
+    # Scarica e prepara i dati da Tiingo
+df = pd.DataFrame(client.get_forex_price_history(
+    symbol,
+    startDate=start_date,
+    endDate=end_date,
+    resampleFreq='1day'
+))
+
+# Prepara il DataFrame
+df.index = pd.to_datetime(df.index)
+df = df.rename(columns={
+    'adjClose': 'Close',
+    'adjHigh': 'High',
+    'adjLow': 'Low',
+    'adjOpen': 'Open'
+})
     
-    # Estrai solo le colonne necessarie
-    df = pd.DataFrame({
-        'Close': df[('Close', symbol)],
-        'High': df[('High', symbol)],
-        'Low': df[('Low', symbol)],
-        'Open': df[('Open', symbol)]
+    # Rinomina le colonne per match con il codice esistente
+    df = df.rename(columns={
+        'adjClose': 'Close',
+        'adjHigh': 'High',
+        'adjLow': 'Low',
+        'adjOpen': 'Open'
     })
     
     # Calcola le medie mobili
