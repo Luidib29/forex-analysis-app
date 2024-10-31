@@ -70,7 +70,22 @@ forex_pairs = {
 
 def plot_candlestick(df, pair_name):
     # Prepara i dati per il grafico a candele
-    df_mpf = df[['Open', 'High', 'Low', 'Close']].copy()
+    df_mpf = df.copy()
+    # Assicuriamoci che l'indice sia il datetime
+    if not isinstance(df_mpf.index, pd.DatetimeIndex):
+        df_mpf.index = pd.to_datetime(df_mpf.index)
+    
+    # Assicuriamoci che i nomi delle colonne siano corretti (maiuscole)
+    df_mpf = df_mpf.rename(columns={
+        'Open': 'Open',
+        'High': 'High',
+        'Low': 'Low',
+        'Close': 'Close',
+        'open': 'Open',
+        'high': 'High',
+        'low': 'Low',
+        'close': 'Close'
+    })
     
     # Configura i colori
     mc = mpf.make_marketcolors(
@@ -86,8 +101,8 @@ def plot_candlestick(df, pair_name):
     s = mpf.make_mpf_style(
         marketcolors=mc,
         gridstyle='--',
-        figcolor='white',  # Cambiato da figure_bgcolor a figcolor
-        gridcolor='gray'   # Aggiunto gridcolor invece di grid=True
+        figcolor='white',
+        gridcolor='gray'
     )
     
     # Aggiungi le medie mobili
@@ -96,20 +111,23 @@ def plot_candlestick(df, pair_name):
         mpf.make_addplot(df['MA50'], color='red', width=0.8)
     ]
     
-    # Crea il grafico
-    fig, axes = mpf.plot(
-        df_mpf,
-        type='candlestick',
-        style=s,
-        addplot=add_plot,
-        volume=True,
-        figsize=(12, 8),
-        returnfig=True,
-        title=f'\n{pair_name} Analisi Tecnica'
-    )
-    
-    return fig
-
+    try:
+        # Crea il grafico
+        fig, axes = mpf.plot(
+            df_mpf,
+            type='candlestick',
+            style=s,
+            addplot=add_plot,
+            volume=True,
+            figsize=(12, 8),
+            returnfig=True,
+            title=f'\n{pair_name} Analisi Tecnica'
+        )
+        return fig
+    except Exception as e:
+        st.error(f"Errore nella creazione del grafico: {str(e)}")
+        st.write("Colonne disponibili nel DataFrame:", df_mpf.columns.tolist())
+        return None
 def analisi_forex(symbol, pair_name):
     # Scarica i dati
     end_date = datetime.now()
@@ -124,12 +142,13 @@ def analisi_forex(symbol, pair_name):
         )
         
         # Rinomina le colonne
-        df = pd.DataFrame({
-            'Close': data['close'],
-            'High': data['high'],
-            'Low': data['low'],
-            'Open': data['open']
-        })
+        # Rinomina le colonne (nella funzione analisi_forex)
+df = pd.DataFrame({
+    'Open': data['open'],
+    'High': data['high'],
+    'Low': data['low'],
+    'Close': data['close']
+})
         
         # Calcola gli indicatori
         df['MA20'] = df['Close'].rolling(window=20).mean()
