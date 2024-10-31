@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 # Configura client Tiingo
 config = {}
 config['session'] = True
-config['api_key'] = st.secrets["TIINGO_API_KEY"]
+config['api_key'] = st.secrets["e01a41babcd49cf76f97fdc98c6bf944abdd154e"]
 client = TiingoClient(config)
 
 # Configurazione pagina
