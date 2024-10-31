@@ -86,15 +86,14 @@ def plot_candlestick(df, pair_name):
     s = mpf.make_mpf_style(
         marketcolors=mc,
         gridstyle='--',
-        y_on_right=False,
-        figure_bgcolor='white',
-        grid=True
+        figcolor='white',  # Cambiato da figure_bgcolor a figcolor
+        gridcolor='gray'   # Aggiunto gridcolor invece di grid=True
     )
     
     # Aggiungi le medie mobili
     add_plot = [
-        mpf.make_addplot(df['MA20'], color='blue', width=0.8, label='MA20'),
-        mpf.make_addplot(df['MA50'], color='red', width=0.8, label='MA50'),
+        mpf.make_addplot(df['MA20'], color='blue', width=0.8),
+        mpf.make_addplot(df['MA50'], color='red', width=0.8)
     ]
     
     # Crea il grafico
