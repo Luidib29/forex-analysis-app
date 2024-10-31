@@ -142,13 +142,12 @@ def analisi_forex(symbol, pair_name):
         )
         
         # Rinomina le colonne
-        # Rinomina le colonne (nella funzione analisi_forex)
-df = pd.DataFrame({
-    'Open': data['open'],
-    'High': data['high'],
-    'Low': data['low'],
-    'Close': data['close']
-})
+        df = pd.DataFrame({
+            'Open': data['open'],
+            'High': data['high'],
+            'Low': data['low'],
+            'Close': data['close']
+        })
         
         # Calcola gli indicatori
         df['MA20'] = df['Close'].rolling(window=20).mean()
@@ -168,6 +167,10 @@ df = pd.DataFrame({
         df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
         
         return df
+        
+    except Exception as e:
+        st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
+        return None
         
     except Exception as e:
         st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
