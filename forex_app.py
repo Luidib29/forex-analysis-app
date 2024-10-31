@@ -321,6 +321,18 @@ for pair_name in selected_pairs:
             st.pyplot(fig_macd)
         
     with tab3:
+            # Aggiungiamo il prezzo in tempo reale
+            st.subheader("Prezzo Attuale")
+            prezzo_attuale = df['Close'].iloc[-1]
+            variazione = ((prezzo_attuale - df['Close'].iloc[-2]) / df['Close'].iloc[-2]) * 100
+            col_prezzo1, col_prezzo2 = st.columns(2)
+            with col_prezzo1:
+                st.metric("Prezzo", f"{prezzo_attuale:.4f}")
+            with col_prezzo2:
+                st.metric("Variazione %", f"{variazione:.2f}%", 
+                         delta=f"{variazione:.2f}%",
+                         delta_color="normal" if variazione >= 0 else "inverse")
+
             st.subheader("Livelli Fibonacci")
             col1, col2 = st.columns(2)
             with col1:
@@ -333,7 +345,19 @@ for pair_name in selected_pairs:
             
             st.subheader("Segnali di Trading")
             st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
-            st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail())
+            
+            # Aggiungiamo una tabella più dettagliata
+            st.subheader("Dettagli Tecnici")
+            df_display = pd.DataFrame({
+                'Prezzo': [prezzo_attuale],
+                'RSI': [df['RSI'].iloc[-1]],
+                'MACD': [df['MACD'].iloc[-1]],
+                'Signal': [df['Signal'].iloc[-1]],
+                'MA20': [df['MA20'].iloc[-1]],
+                'MA50': [df['MA50'].iloc[-1]],
+                'Segnale': [df['Segnale'].iloc[-1]]
+            }).round(4)
+            st.dataframe(df_display.T)
 
 # Footer
 st.markdown("---")
