@@ -346,8 +346,8 @@ for pair_name in selected_pairs:
             st.subheader("Segnali di Trading")
             st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
             
-            # Aggiungiamo una tabella più dettagliata
-            st.subheader("Dettagli Tecnici")
+            # Dettagli Tecnici correnti
+            st.subheader("Dettagli Tecnici Attuali")
             df_display = pd.DataFrame({
                 'Prezzo': [prezzo_attuale],
                 'RSI': [df['RSI'].iloc[-1]],
@@ -358,6 +358,13 @@ for pair_name in selected_pairs:
                 'Segnale': [df['Segnale'].iloc[-1]]
             }).round(4)
             st.dataframe(df_display.T)
+            
+            # Tabella ultimi 5 giorni
+            st.subheader("Ultimi 5 Giorni")
+            df_last_5 = df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail()
+            # Formatta le date nell'indice
+            df_last_5.index = df_last_5.index.strftime('%Y-%m-%d')
+            st.dataframe(df_last_5)
 
 # Footer
 st.markdown("---")
