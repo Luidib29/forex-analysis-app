@@ -297,7 +297,7 @@ for pair_name in selected_pairs:
                 trend = "RIALZISTA" if df['Close'].iloc[-1] > df['MA20'].iloc[-1] else "RIBASSISTA"
                 st.metric("Trend", trend)
         
-        with tab3:
+    with tab3:
     st.subheader("Livelli Fibonacci")
     col1, col2 = st.columns(2)
     with col1:
