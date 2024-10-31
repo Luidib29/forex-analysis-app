@@ -176,20 +176,35 @@ for pair_name, symbol in forex_pairs.items():
     st.subheader('Ultimi Segnali')
     ultimi_dati = df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail()
     st.dataframe(ultimi_dati)
-    
-   # Analisi finale
+    # Analisi finale
     ultimo = df.iloc[-1]
     
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric("Trend Breve", "RIALZISTA" if ultimo['Close'] > ultimo['MA20'] else "RIBASSISTA")
+        trend = "RIALZISTA" if ultimo['Close'] > ultimo['MA20'] else "RIBASSISTA"
+        st.metric("Trend Breve", trend)
+        st.metric("MA20", f"{ultimo['MA20']:.4f}")
+        st.metric("MA50", f"{ultimo['MA50']:.4f}")
+
     with col2:
         st.metric("RSI", f"{ultimo['RSI']:.2f}")
+        st.metric("Supporto S1", f"{ultimo['S1']:.4f}")
+        st.metric("Resistenza R1", f"{ultimo['R1']:.4f}")
+
     with col3:
         st.metric("MACD", f"{ultimo['MACD']:.6f}")
+        st.metric("Signal", f"{ultimo['Signal']:.6f}")
+        st.metric("Pivot Point", f"{ultimo['PP']:.4f}")
+
     with col4:
         st.metric("Segnale", ultimo['Segnale'])
+        st.metric("Prezzo Attuale", f"{ultimo['Close']:.4f}")
+        if trend == "RIALZISTA":
+            st.metric("Prossima Resistenza", f"{ultimo['R1']:.4f}")
+        else:
+            st.metric("Prossimo Supporto", f"{ultimo['S1']:.4f}")
+   
 # Aggiungi pulsante di refresh
 if st.button('Aggiorna Dati'):
     st.rerun()
