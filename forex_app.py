@@ -288,6 +288,7 @@ for pair_name in selected_pairs:
                 st.pyplot(fig)
         
         with tab2:
+            # Prima mostriamo le metriche
             col1, col2 = st.columns(2)
             with col1:
                 st.metric("RSI", f"{df['RSI'].iloc[-1]:.2f}")
@@ -296,6 +297,28 @@ for pair_name in selected_pairs:
                 st.metric("Signal", f"{df['Signal'].iloc[-1]:.6f}")
                 trend = "RIALZISTA" if df['Close'].iloc[-1] > df['MA20'].iloc[-1] else "RIBASSISTA"
                 st.metric("Trend", trend)
+            
+            # Poi aggiungiamo i grafici di RSI e MACD
+            st.subheader("Grafico RSI")
+            fig_rsi, ax_rsi = plt.subplots(figsize=(12, 4))
+            ax_rsi.plot(df.index, df['RSI'], label='RSI', color='purple')
+            ax_rsi.axhline(y=70, color='r', linestyle='--')
+            ax_rsi.axhline(y=30, color='g', linestyle='--')
+            ax_rsi.fill_between(df.index, 70, 30, alpha=0.1, color='gray')
+            ax_rsi.set_ylim(0, 100)
+            ax_rsi.legend()
+            ax_rsi.grid(True)
+            st.pyplot(fig_rsi)
+            
+            st.subheader("Grafico MACD")
+            fig_macd, ax_macd = plt.subplots(figsize=(12, 4))
+            ax_macd.plot(df.index, df['MACD'], label='MACD', color='blue')
+            ax_macd.plot(df.index, df['Signal'], label='Signal', color='red')
+            # Aggiungiamo l'istogramma MACD
+            ax_macd.bar(df.index, df['MACD'] - df['Signal'], alpha=0.3, color='gray')
+            ax_macd.legend()
+            ax_macd.grid(True)
+            st.pyplot(fig_macd)
         
     with tab3:
             st.subheader("Livelli Fibonacci")
