@@ -117,7 +117,6 @@ def plot_candlestick(df, pair_name):
         st.write("Colonne disponibili nel DataFrame:", df_mpf.columns.tolist())
         return None
 def analisi_forex(symbol, pair_name):
-    # Scarica i dati
     end_date = datetime.now()
     start_date = end_date - timedelta(days=periodo)
     
@@ -154,11 +153,48 @@ def analisi_forex(symbol, pair_name):
         df['MACD'] = df['EMA12'] - df['EMA26']
         df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
         
-        return df
+        # Calcolo Pivot Points Fibonacci
+        df['PP'] = (df['High'].shift(1) + df['Low'].shift(1) + df['Close'].shift(1)) / 3
+        daily_range = df['High'].shift(1) - df['Low'].shift(1)
         
-    except Exception as e:
-        st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
-        return None
+        # Livelli Fibonacci
+        df['R1'] = df['PP'] + (0.382 * daily_range)
+        df['R2'] = df['PP'] + (0.618 * daily_range)
+        df['R3'] = df['PP'] + (1.000 * daily_range)
+        df['S1'] = df['PP'] - (0.382 * daily_range)
+        df['S2'] = df['PP'] - (0.618 * daily_range)
+        df['S3'] = df['PP'] - (1.000 * daily_range)
+        
+        # Logica dei segnali
+        df['Segnale'] = 'ATTENDI'
+        
+        for i in range(len(df)):
+            rsi = df['RSI'].iloc[i]
+            macd = df['MACD'].iloc[i]
+            signal = df['Signal'].iloc[i]
+            prezzo = df['Close'].iloc[i]
+            s1 = df['S1'].iloc[i]
+            r1 = df['R1'].iloc[i]
+            
+            if (rsi < 35 and (prezzo <= s1)):
+                if macd > signal:
+                    df.loc[df.index[i], 'Segnale'] = 'COMPRA (Supporto Fib)'
+                else:
+                    df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+            elif (rsi > 65 and (prezzo >= r1)):
+                if macd < signal:
+                    df.loc[df.index[i], 'Segnale'] = 'VENDI (Resistenza Fib)'
+                else:
+                    df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
+            else:
+                if macd > signal and rsi > 35 and prezzo > s1:
+                    df.loc[df.index[i], 'Segnale'] = 'COMPRA (Trend + Fib)'
+                elif macd < signal and rsi < 65 and prezzo < r1:
+                    df.loc[df.index[i], 'Segnale'] = 'VENDI (Trend + Fib)'
+                else:
+                    df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
+        
+        return df
         
     except Exception as e:
         st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
@@ -262,7 +298,19 @@ for pair_name in selected_pairs:
                 st.metric("Trend", trend)
         
         with tab3:
-            st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal']].tail())
+    st.subheader("Livelli Fibonacci")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Resistenza R1", f"{df['R1'].iloc[-1]:.4f}")
+        st.metric("Resistenza R2", f"{df['R2'].iloc[-1]:.4f}")
+        st.metric("Pivot Point", f"{df['PP'].iloc[-1]:.4f}")
+    with col2:
+        st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
+        st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
+    
+    st.subheader("Segnali di Trading")
+    st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
+    st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail())
 
 # Footer
 st.markdown("---")
