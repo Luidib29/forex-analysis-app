@@ -207,7 +207,7 @@ with col2:
 with col3:
     st.metric("Ultimo Aggiornamento", datetime.now().strftime("%H:%M:%S"))
 
-# Analisi per coppia
+# Nella parte dove mostriamo i grafici, modifica questa sezione:
 for pair_name in selected_pairs:
     symbol = forex_pairs[pair_name]
     st.header(f"📈 Analisi {pair_name}")
@@ -218,10 +218,11 @@ for pair_name in selected_pairs:
     df = analisi_forex(symbol, pair_name)
     if df is not None:
         with tab1:
-            # Selettore per tipo di grafico
+            # Aggiungi una key univoca per ogni radio button
             chart_type = st.radio(
                 "Tipo di Grafico",
                 ["Candele", "Lineare"],
+                key=f"radio_{pair_name}",  # Aggiunta questa key univoca
                 horizontal=True
             )
             
