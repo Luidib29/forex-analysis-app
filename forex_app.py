@@ -1,4 +1,3 @@
-# 1. Importazioni
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,7 +6,7 @@ import mplfinance as mpf
 from datetime import datetime, timedelta
 from tiingo import TiingoClient
 
-# 2. Configurazione pagina
+# Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
     page_icon="📊",
@@ -15,11 +14,44 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 3. Configurazione Tiingo e dizionario forex
+# Stili CSS
+st.markdown("""
+    <style>
+    .main {
+        background-color: var(--background-color);
+        color: var(--text-color);
+    }
+    .stButton>button {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        border-radius: 4px;
+        padding: 0.5rem 1rem;
+    }
+    .metric-card {
+        background-color: var(--card-background);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
+    }
+    h1 {
+        color: #1E88E5;
+        font-size: 2.5rem;
+        padding: 1rem 0;
+    }
+    h2 {
+        color: #333;
+        font-size: 1.8rem;
+        padding: 0.5rem 0;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Configura client Tiingo
 config = {
     'session': True,
-    'api_key': '704089b255ddc2cb8e3b5fd97f6367241505f3ac'  # Inserisci la tua API key
+    'api_key': 'TUA-API-KEY-QUI'
 }
 client = TiingoClient(config)
 
@@ -35,7 +67,7 @@ forex_pairs = {
     'EUR/GBP': 'EURGBP',
     'EUR/JPY': 'EURJPY'
 }
-# 4. Funzione per il grafico candlestick
+
 def plot_candlestick(df, pair_name):
     # Prepara i dati per il grafico a candele
     df_mpf = df[['Open', 'High', 'Low', 'Close']].copy()
@@ -79,7 +111,6 @@ def plot_candlestick(df, pair_name):
     
     return fig
 
-# 5. Funzione analisi forex
 def analisi_forex(symbol, pair_name):
     # Scarica i dati
     end_date = datetime.now()
@@ -100,41 +131,31 @@ def analisi_forex(symbol, pair_name):
             'Low': data['low'],
             'Open': data['open']
         })
-        # 6. Stili CSS
-st.markdown("""
-    <style>
-    .main {
-        background-color: var(--background-color);
-        color: var(--text-color);
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 4px;
-        padding: 0.5rem 1rem;
-    }
-    .metric-card {
-        background-color: var(--card-background);
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
-    }
-    h1 {
-        color: #1E88E5;
-        font-size: 2.5rem;
-        padding: 1rem 0;
-    }
-    h2 {
-        color: #333;
-        font-size: 1.8rem;
-        padding: 0.5rem 0;
-    }
-    </style>
-""", unsafe_allow_html=True)
+        
+        # Calcola gli indicatori
+        df['MA20'] = df['Close'].rolling(window=20).mean()
+        df['MA50'] = df['Close'].rolling(window=50).mean()
+        
+        # Calcola RSI
+        delta = df['Close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+        rs = gain / loss
+        df['RSI'] = 100 - (100 / (1 + rs))
+        
+        # Calcola MACD
+        df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
+        df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
+        df['MACD'] = df['EMA12'] - df['EMA26']
+        df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
+        
+        return df
+        
+    except Exception as e:
+        st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
+        return None
 
-# 7. Sidebar
+# Sidebar
 with st.sidebar:
     st.image("https://via.placeholder.com/150x150.png?text=FOREX", width=150)
     st.title("Configurazione")
@@ -164,7 +185,7 @@ with st.sidebar:
     if st.button("🔄 Aggiorna Dati"):
         st.rerun()
 
-# 8. Titolo principale e panoramica
+# Titolo principale e panoramica
 st.title("📊 Pro Forex Analysis Dashboard")
 
 # Market Overview
@@ -176,7 +197,8 @@ with col2:
     st.metric("Periodo Analisi", f"{periodo} giorni")
 with col3:
     st.metric("Ultimo Aggiornamento", datetime.now().strftime("%H:%M:%S"))
-    # 9. Analisi per coppia
+
+# Analisi per coppia
 for pair_name in selected_pairs:
     symbol = forex_pairs[pair_name]
     st.header(f"📈 Analisi {pair_name}")
@@ -232,7 +254,7 @@ for pair_name in selected_pairs:
         with tab3:
             st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal']].tail())
 
-# 10. Footer
+# Footer
 st.markdown("---")
 st.markdown("""
     <div style='text-align: center; padding: 1rem;'>
