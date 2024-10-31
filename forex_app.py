@@ -87,8 +87,14 @@ def analisi_forex(symbol, pair_name):
     df['S3'] = df['PP'] - (1.000 * daily_range)
     # Calcola il MACD
     df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
+    df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
+    df['MACD'] = df['EMA12'] - df['EMA26']
+    df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
+    df['MACD_Hist'] = df['MACD'] - df['Signal']
+    
     # Logica dei segnali con Fibonacci
     df['Segnale'] = 'ATTENDI'
+    
     for i in range(len(df)):
         rsi = df['RSI'].iloc[i]
         macd = df['MACD'].iloc[i]
@@ -119,51 +125,9 @@ def analisi_forex(symbol, pair_name):
                 df.loc[df.index[i], 'Segnale'] = 'VENDI (Trend + Fib)'
             else:
                 df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
-
-    # Calcola il MACD
-    df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
-    df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
-    df['MACD'] = df['EMA12'] - df['EMA26']
-    df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
-    df['MACD_Hist'] = df['MACD'] - df['Signal']
-    
-    # Logica dei segnali con Fibonacci
-    df['Segnale'] = 'ATTENDI'
-    
-    for i in range(len(df)):
-        rsi = df['RSI'].iloc[i]
-        macd = df['MACD'].iloc[i]
-        signal = df['Signal'].iloc[i]
-        prezzo = df['Close'].iloc[i]
-        s1 = df['S1'].iloc[i]
-        r1 = df['R1'].iloc[i]
-        
-        # Segnali di COMPRA
-        if (rsi < 35 and (prezzo <= s1)):  
-            if macd > signal:
-                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Supporto Fib)'
-            else:
-                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
-        
-        # Segnali di VENDITA
-        elif (rsi > 65 and (prezzo >= r1)):  
-            if macd < signal:
-                df.loc[df.index[i], 'Segnale'] = 'VENDI (Resistenza Fib)'
-            else:
-                df.loc[df.index[i], 'Segnale'] = 'ATTENDI (RSI + Fib favorevoli, MACD non conferma)'
-        
-        # Zona neutrale con conferme Fibonacci
-        else:
-            if macd > signal and rsi > 35 and prezzo > s1:
-                df.loc[df.index[i], 'Segnale'] = 'COMPRA (Trend + Fib)'
-            elif macd < signal and rsi < 65 and prezzo < r1:
-                df.loc[df.index[i], 'Segnale'] = 'VENDI (Trend + Fib)'
-            else:
-                df.loc[df.index[i], 'Segnale'] = 'ATTENDI'
     
     return df
-
-# Analisi per ogni coppia
+    # Analisi per ogni coppia
 for pair_name, symbol in forex_pairs.items():
     st.header(f'Analisi {pair_name}')
     
@@ -172,7 +136,7 @@ for pair_name, symbol in forex_pairs.items():
     # Crea i grafici
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12,12))
     
-# Grafico superiore con prezzo, medie mobili e livelli Fibonacci
+    # Grafico superiore con prezzo, medie mobili e livelli Fibonacci
     ax1.plot(df.index, df['Close'], label=pair_name, color='blue')
     ax1.plot(df.index, df['MA20'], label='MA20', linewidth=1, alpha=0.7)
     ax1.plot(df.index, df['MA50'], label='MA50', linewidth=1, alpha=0.7)
@@ -231,6 +195,7 @@ for pair_name, symbol in forex_pairs.items():
 # Aggiungi pulsante di refresh
 if st.button('Aggiorna Dati'):
     st.rerun()
+    
 
 
                 
