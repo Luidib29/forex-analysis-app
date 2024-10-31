@@ -43,13 +43,25 @@ def analisi_forex(symbol, pair_name):
     start_date = end_date - timedelta(days=periodo)
     
     # Scarica e prepara i dati da Tiingo
-    df = pd.DataFrame(client.get_forex_price_history(
-        symbol,
-        startDate=start_date,
-        endDate=end_date,
-        resampleFreq='1day'
-    ))
-
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Token {config["api_key"]}'
+    }
+    
+    try:
+        df = pd.DataFrame(client.get_ticker_price(
+            ticker=symbol,
+            startDate=start_date,
+            endDate=end_date,
+            frequency='daily'
+        ))
+    except:
+        # Backup method using direct API call
+        df = client.get_dataframe(symbol,
+                                 frequency='daily',
+                                 startDate=start_date,
+                                 endDate=end_date)
+    
     # Prepara il DataFrame
     df.index = pd.to_datetime(df.index)
     df = df.rename(columns={
@@ -84,6 +96,7 @@ def analisi_forex(symbol, pair_name):
     df['S1'] = df['PP'] - (0.382 * daily_range)
     df['S2'] = df['PP'] - (0.618 * daily_range)
     df['S3'] = df['PP'] - (1.000 * daily_range)
+
     # Calcola il MACD
     df['EMA12'] = df['Close'].ewm(span=12, adjust=False).mean()
     df['EMA26'] = df['Close'].ewm(span=26, adjust=False).mean()
@@ -91,7 +104,7 @@ def analisi_forex(symbol, pair_name):
     df['Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
     df['MACD_Hist'] = df['MACD'] - df['Signal']
     
-    # Logica dei segnali con Fibonacci
+    # Logica dei segnali
     df['Segnale'] = 'ATTENDI'
     
     for i in range(len(df)):
