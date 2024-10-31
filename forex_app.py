@@ -19,7 +19,7 @@ st.set_page_config(
 # Configura client Tiingo
 config = {
     'session': True,
-    'api_key': 'TUA-API-KEY-QUI'  # Inserisci la tua API key
+    'api_key': '704089b255ddc2cb8e3b5fd97f6367241505f3ac'  # Inserisci la tua API key
 }
 client = TiingoClient(config)
 
