@@ -75,18 +75,6 @@ def plot_candlestick(df, pair_name):
     if not isinstance(df_mpf.index, pd.DatetimeIndex):
         df_mpf.index = pd.to_datetime(df_mpf.index)
     
-    # Assicuriamoci che i nomi delle colonne siano corretti (maiuscole)
-    df_mpf = df_mpf.rename(columns={
-        'Open': 'Open',
-        'High': 'High',
-        'Low': 'Low',
-        'Close': 'Close',
-        'open': 'Open',
-        'high': 'High',
-        'low': 'Low',
-        'close': 'Close'
-    })
-    
     # Configura i colori
     mc = mpf.make_marketcolors(
         up='green',
@@ -112,13 +100,13 @@ def plot_candlestick(df, pair_name):
     ]
     
     try:
-        # Crea il grafico
+        # Crea il grafico senza volume
         fig, axes = mpf.plot(
             df_mpf,
             type='candlestick',
             style=s,
             addplot=add_plot,
-            volume=True,
+            volume=False,  # Cambiato da True a False
             figsize=(12, 8),
             returnfig=True,
             title=f'\n{pair_name} Analisi Tecnica'
