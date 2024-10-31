@@ -298,19 +298,19 @@ for pair_name in selected_pairs:
                 st.metric("Trend", trend)
         
     with tab3:
-    st.subheader("Livelli Fibonacci")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Resistenza R1", f"{df['R1'].iloc[-1]:.4f}")
-        st.metric("Resistenza R2", f"{df['R2'].iloc[-1]:.4f}")
-        st.metric("Pivot Point", f"{df['PP'].iloc[-1]:.4f}")
-    with col2:
-        st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
-        st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
-    
-    st.subheader("Segnali di Trading")
-    st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
-    st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail())
+            st.subheader("Livelli Fibonacci")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Resistenza R1", f"{df['R1'].iloc[-1]:.4f}")
+                st.metric("Resistenza R2", f"{df['R2'].iloc[-1]:.4f}")
+                st.metric("Pivot Point", f"{df['PP'].iloc[-1]:.4f}")
+            with col2:
+                st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
+                st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
+            
+            st.subheader("Segnali di Trading")
+            st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
+            st.dataframe(df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail())
 
 # Footer
 st.markdown("---")
