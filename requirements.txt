@@ -3,3 +3,5 @@ tiingo
 pandas
 numpy
 matplotlib
+setuptools
+wheel
