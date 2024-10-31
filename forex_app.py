@@ -14,7 +14,7 @@ st.set_page_config(
 # Configura client Tiingo
 config = {
     'session': True,
-    'api_key': 'e01a41babcd49cf76f97fdc98c6bf944abdd154e'
+    'api_key': '704089b255ddc2cb8e3b5fd97f6367241505f3ac'
 }
 client = TiingoClient(config)
 
