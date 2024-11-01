@@ -95,6 +95,19 @@ st.markdown("""
     .stTabs [data-baseweb="tab-panel"] {
         padding: 20px 0 !important;
     }
+    /* Stile header */
+    .header-container {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    
+    /* Stile per i selectbox nell'header */
+    .header-container .stSelectbox {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-radius: 5px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -254,12 +267,20 @@ def analisi_forex(symbol, pair_name):
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
 # Dividiamo l'header in colonne
-col1, col2, col3 = st.columns([2,2,1])
+col1, col2, col3, col4 = st.columns([2,2,2,1])
 
 with col1:
     st.title("📊 Pro Forex Analysis")
 
 with col2:
+    # Selezione coppie forex
+    selected_pairs = st.multiselect(
+        "Seleziona Coppie Forex",
+        list(forex_pairs.keys()),
+        default=list(forex_pairs.keys())[:3]
+    )
+
+with col3:
     # Selezione periodo
     periodo = st.selectbox(
         "Periodo di Analisi",
@@ -267,13 +288,19 @@ with col2:
         format_func=lambda x: f"{x} giorni"
     )
 
-with col3:
+with col4:
     if st.button("🔄 Aggiorna"):
         st.rerun()
 
 st.markdown('</div>', unsafe_allow_html=True)
+
+# Market Overview (inizia direttamente con la panoramica)
+st.header("🌍 Panoramica Mercato")
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Mercati Analizzati", len(selected_pairs))
+# ... resto del codice
 # Titolo principale e panoramica
-st.title("📊 Pro Forex Analysis Dashboard")
 
 # Market Overview
 st.header("🌍 Panoramica Mercato")
