@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import mplfinance as mpf
 from datetime import datetime, timedelta
 from tiingo import TiingoClient
+import requests
 
 # Configurazione pagina
 st.set_page_config(
@@ -130,7 +131,24 @@ forex_pairs = {
     'EUR/GBP': 'EURGBP',
     'EUR/JPY': 'EURJPY'
 }
-
+def get_forex_realtime_price(symbol):
+    try:
+        endpoint = f"https://api.tiingo.com/tiingo/fx/{symbol}/top"
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Token {config["api_key"]}'
+        }
+        response = requests.get(endpoint, headers=headers)
+        data = response.json()
+        return {
+            'midPrice': data[0]['midPrice'],
+            'bidPrice': data[0]['bidPrice'],
+            'askPrice': data[0]['askPrice'],
+            'timestamp': data[0]['quoteTimestamp']
+        }
+    except Exception as e:
+        st.error(f"Errore nel recupero del prezzo realtime: {str(e)}")
+        return None
 def plot_candlestick(df, pair_name):
     # Prepara i dati per il grafico a candele
     df_mpf = df.copy()
@@ -269,7 +287,29 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 # Dividiamo l'header in colonne
 col1, col2, col3, col4, col5 = st.columns([2,2,2,1,1])
 
-with col1:
+          with tab3:
+            # Aggiungiamo prezzo realtime
+            realtime_price = get_forex_realtime_price(symbol)
+            if realtime_price:
+                st.subheader("Prezzo in Tempo Reale")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Prezzo Medio", f"{realtime_price['midPrice']:.4f}")
+                    st.metric("Bid", f"{realtime_price['bidPrice']:.4f}")
+                with col2:
+                    st.metric("Ask", f"{realtime_price['askPrice']:.4f}")
+                    st.metric("Ultimo Aggiornamento", datetime.fromisoformat(realtime_price['timestamp'].replace('Z', '+00:00')).strftime('%H:%M:%S'))
+
+            # Resto del codice esistente per il tab3...
+            st.subheader("Livelli Fibonacci")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("Resistenza R1", f"{df['R1'].iloc[-1]:.4f}")
+                st.metric("Resistenza R2", f"{df['R2'].iloc[-1]:.4f}")
+                st.metric("Pivot Point", f"{df['PP'].iloc[-1]:.4f}")
+            with col2:
+                st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
+                st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
     st.title("📊 Pro Forex Analysis")
 
 with col2:
