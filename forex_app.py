@@ -287,29 +287,7 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 # Dividiamo l'header in colonne
 col1, col2, col3, col4, col5 = st.columns([2,2,2,1,1])
 
-          with tab3:
-            # Aggiungiamo prezzo realtime
-            realtime_price = get_forex_realtime_price(symbol)
-            if realtime_price:
-                st.subheader("Prezzo in Tempo Reale")
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Prezzo Medio", f"{realtime_price['midPrice']:.4f}")
-                    st.metric("Bid", f"{realtime_price['bidPrice']:.4f}")
-                with col2:
-                    st.metric("Ask", f"{realtime_price['askPrice']:.4f}")
-                    st.metric("Ultimo Aggiornamento", datetime.fromisoformat(realtime_price['timestamp'].replace('Z', '+00:00')).strftime('%H:%M:%S'))
-
-            # Resto del codice esistente per il tab3...
-            st.subheader("Livelli Fibonacci")
-            col1, col2 = st.columns(2)
-            with col1:
-                st.metric("Resistenza R1", f"{df['R1'].iloc[-1]:.4f}")
-                st.metric("Resistenza R2", f"{df['R2'].iloc[-1]:.4f}")
-                st.metric("Pivot Point", f"{df['PP'].iloc[-1]:.4f}")
-            with col2:
-                st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
-                st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
+with col1:
     st.title("📊 Pro Forex Analysis")
 
 with col2:
@@ -339,7 +317,7 @@ with col5:
         show_ma = st.checkbox("📈 Medie Mobili", value=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
+           
 # Market Overview
 st.header("🌍 Panoramica Mercato")
 col1, col2, col3 = st.columns(3)
@@ -428,18 +406,32 @@ for pair_name in selected_pairs:
             st.pyplot(fig_macd)
         
     with tab3:
-            # Aggiungiamo il prezzo in tempo reale
-            st.subheader("Prezzo Attuale")
+            # Aggiungiamo prezzo realtime
+            realtime_price = get_forex_realtime_price(symbol)
+            if realtime_price:
+                st.subheader("Prezzo in Tempo Reale")
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Prezzo Medio", f"{realtime_price['midPrice']:.4f}")
+                    st.metric("Bid", f"{realtime_price['bidPrice']:.4f}")
+                with col2:
+                    st.metric("Ask", f"{realtime_price['askPrice']:.4f}")
+                    st.metric("Ultimo Aggiornamento", 
+                            datetime.fromisoformat(realtime_price['timestamp'].replace('Z', '+00:00')).strftime('%H:%M:%S'))
+
+            # Confronto con prezzo di chiusura
+            st.subheader("Prezzo di Chiusura")
             prezzo_attuale = df['Close'].iloc[-1]
             variazione = ((prezzo_attuale - df['Close'].iloc[-2]) / df['Close'].iloc[-2]) * 100
             col_prezzo1, col_prezzo2 = st.columns(2)
             with col_prezzo1:
-                st.metric("Prezzo", f"{prezzo_attuale:.4f}")
+                st.metric("Chiusura", f"{prezzo_attuale:.4f}")
             with col_prezzo2:
-                st.metric("Variazione %", f"{variazione:.2f}%", 
+                st.metric("Variazione %", f"{variazione:.2f}%",
                          delta=f"{variazione:.2f}%",
                          delta_color="normal" if variazione >= 0 else "inverse")
 
+            # Livelli Fibonacci
             st.subheader("Livelli Fibonacci")
             col1, col2 = st.columns(2)
             with col1:
@@ -450,26 +442,13 @@ for pair_name in selected_pairs:
                 st.metric("Supporto S1", f"{df['S1'].iloc[-1]:.4f}")
                 st.metric("Supporto S2", f"{df['S2'].iloc[-1]:.4f}")
             
+            # Segnali e indicatori
             st.subheader("Segnali di Trading")
             st.metric("Segnale Attuale", df['Segnale'].iloc[-1])
             
-            # Dettagli Tecnici correnti
-            st.subheader("Dettagli Tecnici Attuali")
-            df_display = pd.DataFrame({
-                'Prezzo': [prezzo_attuale],
-                'RSI': [df['RSI'].iloc[-1]],
-                'MACD': [df['MACD'].iloc[-1]],
-                'Signal': [df['Signal'].iloc[-1]],
-                'MA20': [df['MA20'].iloc[-1]],
-                'MA50': [df['MA50'].iloc[-1]],
-                'Segnale': [df['Segnale'].iloc[-1]]
-            }).round(4)
-            st.dataframe(df_display.T)
-            
-            # Tabella ultimi 5 giorni
+            # Dettagli Tecnici ultimi 5 giorni
             st.subheader("Ultimi 5 Giorni")
             df_last_5 = df[['Close', 'RSI', 'MACD', 'Signal', 'Segnale']].tail()
-            # Formatta le date nell'indice
             df_last_5.index = df_last_5.index.strftime('%Y-%m-%d')
             st.dataframe(df_last_5)
 
