@@ -21,113 +21,80 @@ st.markdown("""
     /* Import Google Font - Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
     
-    /* Reset sfondo principale */
+    /* Sfondo principale */
     .stApp {
         background-color: #0066cc !important;
     }
     
-    /* Stile generale */
-    .main {
-        font-family: 'Roboto', sans-serif !important;
-        color: white !important;
-        padding: 1rem;
-    }
-    
-    /* Header e menu */
-    .header-container {
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        color: #333333;
-    }
-    
-    /* Titoli nelle aree blu */
+    /* Titolo principale */
     .main h1 {
-        color: white !important;
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
-        font-size: 1.8rem !important;
-        font-weight: 500;
+        font-size: 2rem !important;
+        font-weight: 500 !important;
     }
     
+    /* Titolo delle sezioni */
     .main h2 {
-        color: white !important;
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
-        font-size: 1.4rem !important;
-        font-weight: 400;
+        font-size: 1.6rem !important;
+        font-weight: 400 !important;
+        margin-top: 2rem !important;
     }
     
-    /* Cards e contenitori */
-    .metric-card {
-        background-color: rgba(255, 255, 255, 0.95);
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 1rem;
-        color: #333333;
+    /* Testo metrica */
+    .stMetric label {
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
+        font-size: 1rem !important;
     }
     
-    /* Menu a tendina */
-    .stSelectbox {
-        background-color: white;
-        border-radius: 5px;
-        color: #333333;
-        font-size: 0.9rem;
+    /* Valore metrica */
+    .stMetric .metric-value {
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
+        font-size: 1.2rem !important;
+        font-weight: 500 !important;
     }
     
-    /* Bottoni */
-    .stButton>button {
-        background-color: #0066cc;
-        color: white;
-        font-family: 'Roboto', sans-serif !important;
-        border: none;
-        border-radius: 5px;
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
+    /* Tabs styling */
+    .stTabs {
+        background-color: transparent !important;
     }
     
-    /* Tabelle */
-    .dataframe {
-        font-size: 0.9rem !important;
-        background-color: white;
-        color: #333333;
-        font-family: 'Roboto', sans-serif !important;
-    }
-    
-    /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 2px;
-        background-color: rgba(255, 255, 255, 0.95);
-        font-family: 'Roboto', sans-serif !important;
+        gap: 30px !important;
+        background-color: transparent !important;
+        padding: 0 20px !important;
+        margin-bottom: 20px !important;
     }
     
     .stTabs [data-baseweb="tab"] {
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
-        font-size: 0.9rem;
-        color: #333333;
+        font-size: 1rem !important;
+        background-color: transparent !important;
+        border: none !important;
+        padding: 10px 20px !important;
+        font-weight: 400 !important;
     }
-
-    /* Metriche */
-    .stMetric {
+    
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        color: #FFFFFF !important;
+        font-weight: 500 !important;
+        border-bottom: 2px solid white !important;
+    }
+    
+    /* Testi generici */
+    .main p, .main span, .main div {
+        color: #FFFFFF !important;
         font-family: 'Roboto', sans-serif !important;
     }
     
-    /* Override generale per il font */
-    * {
-        font-family: 'Roboto', sans-serif !important;
-    }
-    
-    /* Testo nelle aree blu */
-    .main p, .main label {
-        color: white !important;
-        font-size: 0.9rem;
-    }
-    
-    /* Testo nelle aree bianche */
-    .metric-card p, .metric-card label {
-        color: #333333 !important;
-        font-size: 0.9rem;
+    /* Grafico e contenuti delle tab */
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: 20px 0 !important;
     }
     </style>
 """, unsafe_allow_html=True)
