@@ -7,43 +7,124 @@ from datetime import datetime, timedelta
 from tiingo import TiingoClient
 
 # Configurazione pagina
+# Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"  # Nascondiamo la sidebar
 )
 
 # Stili CSS
 st.markdown("""
     <style>
+    /* Import Google Font - Roboto */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+    
+    /* Stile generale */
     .main {
-        background-color: var(--background-color);
-        color: var(--text-color);
-    }
-    .stButton>button {
-        width: 100%;
-        background-color: #4CAF50;
-        color: white;
-        border-radius: 4px;
-        padding: 0.5rem 1rem;
-    }
-    .metric-card {
-        background-color: var(--card-background);
+        background-color: #0066cc;  /* Blu elettrico */
+        font-family: 'Roboto', sans-serif;
         padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    /* Header e menu */
+    .header-container {
+        background-color: rgba(255, 255, 255, 0.95);  /* Header bianco */
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        color: #333333;  /* Testo nero nell'header */
+    }
+    
+    /* Titoli nelle aree blu */
+    .main h1 {
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.8rem !important;  /* Ridotto */
+        font-weight: 500;
+    }
+    
+    .main h2 {
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1.4rem !important;  /* Ridotto */
+        font-weight: 400;
+    }
+    
+    /* Titoli nelle aree bianche */
+    .header-container h1, .metric-card h1, .metric-card h2 {
+        color: #333333;
+        font-family: 'Roboto', sans-serif;
+    }
+    
+    /* Cards e contenitori */
+    .metric-card {
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 1rem;
+        border-radius: 10px;
         margin-bottom: 1rem;
+        color: #333333;  /* Testo nero nelle card */
     }
-    h1 {
-        color: #1E88E5;
-        font-size: 2.5rem;
-        padding: 1rem 0;
+    
+    /* Menu a tendina */
+    .stSelectbox {
+        background-color: white;
+        border-radius: 5px;
+        color: #333333;
+        font-size: 0.9rem;
     }
-    h2 {
-        color: #333;
-        font-size: 1.8rem;
-        padding: 0.5rem 0;
+    
+    /* Bottoni */
+    .stButton>button {
+        background-color: #0066cc;
+        color: white;
+        font-family: 'Roboto', sans-serif;
+        border: none;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Tabelle */
+    .dataframe {
+        font-size: 0.9rem !important;
+        background-color: white;
+        color: #333333;
+    }
+    
+    /* Tabs */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2px;
+        background-color: rgba(255, 255, 255, 0.95);
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.9rem;
+        color: #333333;
+    }
+
+    /* Metriche nelle aree blu */
+    .main .stMetric {
+        color: white;
+    }
+    
+    /* Metriche nelle card bianche */
+    .metric-card .stMetric {
+        color: #333333;
+    }
+    
+    /* Testo generico nelle aree blu */
+    .main p, .main label {
+        color: white;
+        font-size: 0.9rem;
+    }
+    
+    /* Testo generico nelle aree bianche */
+    .metric-card p, .metric-card label {
+        color: #333333;
+        font-size: 0.9rem;
     }
     </style>
 """, unsafe_allow_html=True)
