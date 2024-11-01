@@ -263,11 +263,11 @@ def analisi_forex(symbol, pair_name):
         st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
         return None
         
-# Nuovo header
+# Nuovo header con impostazioni
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
 # Dividiamo l'header in colonne
-col1, col2, col3, col4 = st.columns([2,2,2,1])
+col1, col2, col3, col4, col5 = st.columns([2,2,2,1,1])
 
 with col1:
     st.title("📊 Pro Forex Analysis")
@@ -291,6 +291,12 @@ with col3:
 with col4:
     if st.button("🔄 Aggiorna"):
         st.rerun()
+
+with col5:
+    with st.expander("⚙️ Impostazioni"):
+        theme = st.toggle("🌓 Dark Mode", False)
+        show_volume = st.checkbox("📊 Mostra Volume", value=True)
+        show_ma = st.checkbox("📈 Medie Mobili", value=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
 
