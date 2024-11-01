@@ -98,9 +98,7 @@ st.markdown("""
     }
     /* Stile header */
     .header-container {
-        background-color: rgba(255, 255, 255, 0.1);
         padding: 1rem;
-        border-radius: 10px;
         margin-bottom: 2rem;
     }
     
