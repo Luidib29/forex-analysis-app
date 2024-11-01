@@ -294,14 +294,6 @@ with col4:
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# Market Overview (inizia direttamente con la panoramica)
-st.header("🌍 Panoramica Mercato")
-col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Mercati Analizzati", len(selected_pairs))
-# ... resto del codice
-# Titolo principale e panoramica
-
 # Market Overview
 st.header("🌍 Panoramica Mercato")
 col1, col2, col3 = st.columns(3)
