@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from tiingo import TiingoClient
 
 # Configurazione pagina
-# Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
     page_icon="📊",
@@ -250,37 +249,29 @@ def analisi_forex(symbol, pair_name):
     except Exception as e:
         st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
         return None
+        
+# Nuovo header
+st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
-# Sidebar
-with st.sidebar:
-    st.image("https://via.placeholder.com/150x150.png?text=FOREX", width=150)
-    st.title("Configurazione")
-    
-    # Dark/Light mode toggle
-    theme = st.toggle("🌓 Dark Mode", False)
-    
+# Dividiamo l'header in colonne
+col1, col2, col3 = st.columns([2,2,1])
+
+with col1:
+    st.title("📊 Pro Forex Analysis")
+
+with col2:
     # Selezione periodo
     periodo = st.selectbox(
         "Periodo di Analisi",
         [90, 180, 365],
         format_func=lambda x: f"{x} giorni"
     )
-    
-    # Selezione coppie forex
-    selected_pairs = st.multiselect(
-        "Seleziona Coppie Forex",
-        list(forex_pairs.keys()),
-        default=list(forex_pairs.keys())[:3]
-    )
-    
-    # Impostazioni grafico
-    st.subheader("Impostazioni Grafico")
-    show_volume = st.checkbox("Mostra Volume", value=True)
-    show_ma = st.checkbox("Mostra Medie Mobili", value=True)
-    
-    if st.button("🔄 Aggiorna Dati"):
+
+with col3:
+    if st.button("🔄 Aggiorna"):
         st.rerun()
 
+st.markdown('</div>', unsafe_allow_html=True)
 # Titolo principale e panoramica
 st.title("📊 Pro Forex Analysis Dashboard")
 
