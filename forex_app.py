@@ -429,7 +429,7 @@ for pair_name in selected_pairs:
             with col_prezzo2:
                 st.metric("Variazione %", f"{variazione:.2f}%",
                          delta=f"{variazione:.2f}%",
-                         delta_color="normal" if variazione >= 0 else "inverse")
+                         delta_color="inverse" if variazione >= 0 else "normal")
 
             # Livelli Fibonacci
             st.subheader("Livelli Fibonacci")
