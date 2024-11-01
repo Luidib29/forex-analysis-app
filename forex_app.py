@@ -12,7 +12,7 @@ st.set_page_config(
     page_title="Pro Forex Analysis",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="collapsed"  # Nascondiamo la sidebar
+    initial_sidebar_state="collapsed"
 )
 
 # Stili CSS
@@ -21,41 +21,40 @@ st.markdown("""
     /* Import Google Font - Roboto */
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
     
+    /* Reset sfondo principale */
+    .stApp {
+        background-color: #0066cc !important;
+    }
+    
     /* Stile generale */
     .main {
-        background-color: #0066cc;  /* Blu elettrico */
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Roboto', sans-serif !important;
+        color: white !important;
         padding: 1rem;
     }
     
     /* Header e menu */
     .header-container {
-        background-color: rgba(255, 255, 255, 0.95);  /* Header bianco */
+        background-color: rgba(255, 255, 255, 0.95);
         padding: 1rem;
         border-radius: 10px;
         margin-bottom: 2rem;
-        color: #333333;  /* Testo nero nell'header */
+        color: #333333;
     }
     
     /* Titoli nelle aree blu */
     .main h1 {
-        color: white;
-        font-family: 'Roboto', sans-serif;
-        font-size: 1.8rem !important;  /* Ridotto */
+        color: white !important;
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 1.8rem !important;
         font-weight: 500;
     }
     
     .main h2 {
-        color: white;
-        font-family: 'Roboto', sans-serif;
-        font-size: 1.4rem !important;  /* Ridotto */
+        color: white !important;
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 1.4rem !important;
         font-weight: 400;
-    }
-    
-    /* Titoli nelle aree bianche */
-    .header-container h1, .metric-card h1, .metric-card h2 {
-        color: #333333;
-        font-family: 'Roboto', sans-serif;
     }
     
     /* Cards e contenitori */
@@ -64,7 +63,8 @@ st.markdown("""
         padding: 1rem;
         border-radius: 10px;
         margin-bottom: 1rem;
-        color: #333333;  /* Testo nero nelle card */
+        color: #333333;
+        font-family: 'Roboto', sans-serif !important;
     }
     
     /* Menu a tendina */
@@ -73,13 +73,14 @@ st.markdown("""
         border-radius: 5px;
         color: #333333;
         font-size: 0.9rem;
+        font-family: 'Roboto', sans-serif !important;
     }
     
     /* Bottoni */
     .stButton>button {
         background-color: #0066cc;
         color: white;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Roboto', sans-serif !important;
         border: none;
         border-radius: 5px;
         padding: 0.5rem 1rem;
@@ -91,39 +92,41 @@ st.markdown("""
         font-size: 0.9rem !important;
         background-color: white;
         color: #333333;
+        font-family: 'Roboto', sans-serif !important;
     }
     
     /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 2px;
         background-color: rgba(255, 255, 255, 0.95);
+        font-family: 'Roboto', sans-serif !important;
     }
     
     .stTabs [data-baseweb="tab"] {
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Roboto', sans-serif !important;
         font-size: 0.9rem;
         color: #333333;
     }
 
-    /* Metriche nelle aree blu */
-    .main .stMetric {
-        color: white;
+    /* Metriche */
+    .stMetric {
+        font-family: 'Roboto', sans-serif !important;
     }
     
-    /* Metriche nelle card bianche */
-    .metric-card .stMetric {
-        color: #333333;
+    /* Override generale per il font */
+    * {
+        font-family: 'Roboto', sans-serif !important;
     }
     
-    /* Testo generico nelle aree blu */
+    /* Testo nelle aree blu */
     .main p, .main label {
-        color: white;
+        color: white !important;
         font-size: 0.9rem;
     }
     
-    /* Testo generico nelle aree bianche */
+    /* Testo nelle aree bianche */
     .metric-card p, .metric-card label {
-        color: #333333;
+        color: #333333 !important;
         font-size: 0.9rem;
     }
     </style>
