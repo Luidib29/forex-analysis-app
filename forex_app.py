@@ -294,7 +294,7 @@ with col1:
         Con segnali di trading reali.
         </div>
         <h1 style='margin-top: 0.5rem; color: white; font-size: 2.2rem; font-weight: 600;'>
-        📊 Pro Forex Analysis</h1>
+<span style='font-size: 1.5rem;'>€/$ £/$ ¥/$ A$/$ C$/$ F/$ N$/$ €/£ €/¥</span> Pro Forex Analysis</h1>
     """, unsafe_allow_html=True)
 
 with col2:
