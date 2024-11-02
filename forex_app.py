@@ -286,7 +286,16 @@ st.markdown('<div class="header-container">', unsafe_allow_html=True)
 col1, col2, col3, col4, col5 = st.columns([2,2,2,1,1])
 
 with col1:
-    st.title("📊 Pro Forex Analysis")
+    st.markdown("""
+        <div style='color: #e0e0e0; font-family: Roboto, sans-serif; font-size: 0.85rem; 
+        margin-bottom: 0.5rem; line-height: 1.4; font-weight: 300;'>
+        Professional Trading System, la prima app trading che ti mostra un'analisi tecnica 
+        completa e automatica tramite AI. Con segnali di trading reali.
+        </div>
+        <div style='font-size: 2rem; font-weight: 600; color: white;'>
+        📊 Pro Forex Analysis
+        </div>
+    """, unsafe_allow_html=True)
 
 with col2:
     # Selezione coppie forex
