@@ -103,7 +103,7 @@ if not st.session_state.logged_in:
                 else:
                     st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
 
-else:
+    else:
     # Il tuo codice esistente dell'app qui
     
 # Configurazione pagina
