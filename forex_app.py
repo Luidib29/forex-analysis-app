@@ -293,8 +293,17 @@ with col1:
         la prima app trading che ti mostra un'analisi tecnica completa e automatica tramite AI.
         Con segnali di trading reali.
         </div>
-        <h1 style='margin-top: 0.5rem; color: white; font-size: 2.2rem; font-weight: 600;'>
-🇪🇺🇺🇸 🇬🇧🇺🇸 🇺🇸🇯🇵 🇦🇺🇺🇸 🇺🇸🇨🇦 🇺🇸🇨🇭 🇳🇿🇺🇸 🇪🇺🇬🇧 🇪🇺🇯🇵<br>  Forex Analysis</h1>
+        <h1 style='margin-top: 0.5rem; color: white; font-size: 2.2rem; font-weight: 400;'>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇺🇸</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇬🇧🇺🇸</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇯🇵</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇦🇺🇺🇸</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇨🇦</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇨🇭</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇳🇿🇺🇸</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇬🇧</span>
+<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇯🇵</span><br>
+Pro Forex Analysis</h1>
     """, unsafe_allow_html=True)
 
 with col2:
