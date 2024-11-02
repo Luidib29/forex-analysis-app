@@ -102,23 +102,22 @@ if not st.session_state.logged_in:
                     st.rerun()
                 else:
                     st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
-
-                else:
+else:
     # Il tuo codice esistente dell'app qui
     
 # Configurazione pagina
-st.set_page_config(
-    page_title="Pro Forex Analysis",
-    page_icon="€$£¥A$C$F$N$",  # tutti i simboli delle coppie
-    layout="wide",
-    initial_sidebar_state="collapsed"
-)
+    st.set_page_config(
+        page_title="Pro Forex Analysis",
+        page_icon="€$£¥A$C$F$N$",  # tutti i simboli delle coppie
+        layout="wide",
+        initial_sidebar_state="collapsed"
+    )
 
-# Stili CSS
-st.markdown("""
-    <style>
-    /* Import Google Font - Roboto */
-    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+    # Stili CSS
+    st.markdown("""
+        <style>
+        /* Import Google Font - Roboto */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
     
     /* Sfondo principale */
     .stApp {
@@ -209,25 +208,28 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Configura client Tiingo
-config = {
-    'session': True,
-    'api_key': '704089b255ddc2cb8e3b5fd97f6367241505f3ac'
-}
-client = TiingoClient(config)
+else:
+    # ... il CSS che hai già indentato ...
 
-# Dizionario delle coppie forex
-forex_pairs = {
-    'EUR/USD': 'EURUSD',
-    'GBP/USD': 'GBPUSD',
-    'USD/JPY': 'USDJPY',
-    'AUD/USD': 'AUDUSD',
-    'USD/CAD': 'USDCAD',
-    'USD/CHF': 'USDCHF',
-    'NZD/USD': 'NZDUSD',
-    'EUR/GBP': 'EURGBP',
-    'EUR/JPY': 'EURJPY'
-}
+    # Configura client Tiingo
+    config = {
+        'session': True,
+        'api_key': '704089b255ddc2cb8e3b5fd97f6367241505f3ac'
+    }
+    client = TiingoClient(config)
+
+    # Dizionario delle coppie forex
+    forex_pairs = {
+        'EUR/USD': 'EURUSD',
+        'GBP/USD': 'GBPUSD',
+        'USD/JPY': 'USDJPY',
+        'AUD/USD': 'AUDUSD',
+        'USD/CAD': 'USDCAD',
+        'USD/CHF': 'USDCHF',
+        'NZD/USD': 'NZDUSD',
+        'EUR/GBP': 'EURGBP',
+        'EUR/JPY': 'EURJPY'
+    }
 def get_forex_realtime_price(symbol):
     try:
         endpoint = f"https://api.tiingo.com/tiingo/fx/{symbol}/top"
