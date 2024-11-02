@@ -10,7 +10,7 @@ import requests
 # Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
-    page_icon="📊",
+    page_icon="€$£¥A$C$F$N$",  # tutti i simboli delle coppie
     layout="wide",
     initial_sidebar_state="collapsed"
 )
