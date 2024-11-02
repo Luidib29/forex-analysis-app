@@ -287,14 +287,14 @@ col1, col2, col3, col4, col5 = st.columns([2,2,2,1,1])
 
 with col1:
     st.markdown("""
-        <div style='color: #e0e0e0; font-family: Roboto, sans-serif; font-size: 0.85rem; 
-        margin-bottom: 0.5rem; line-height: 1.4; font-weight: 300;'>
-        Professional Trading System, la prima app trading che ti mostra un'analisi tecnica 
-        completa e automatica tramite AI. Con segnali di trading reali.
+        <div style='color: #E0E0E0; font-family: Roboto, sans-serif; font-size: 0.95rem; 
+        padding: 0.5rem 0; line-height: 1.6; max-width: 600px; margin-top: 1rem;'>
+        <strong style='color: white; font-size: 1.1rem;'>Professional Trading System</strong><br>
+        la prima app trading che ti mostra un'analisi tecnica completa e automatica tramite AI.
+        Con segnali di trading reali.
         </div>
-        <div style='font-size: 2rem; font-weight: 600; color: white;'>
-        📊 Pro Forex Analysis
-        </div>
+        <h1 style='margin-top: 0.5rem; color: white; font-size: 2.2rem; font-weight: 600;'>
+        📊 Pro Forex Analysis</h1>
     """, unsafe_allow_html=True)
 
 with col2:
