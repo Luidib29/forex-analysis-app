@@ -6,7 +6,106 @@ import mplfinance as mpf
 from datetime import datetime, timedelta
 from tiingo import TiingoClient
 import requests
+import re           # aggiungi
+import json        # aggiungi
+import os          # aggiungi
 
+# Funzione per validare email
+def is_valid_email(email):
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+# Funzione per salvare i dati utente
+def save_user_data(name, email):
+    users_file = 'users_data.json'
+    try:
+        if os.path.exists(users_file):
+            with open(users_file, 'r') as f:
+                users = json.load(f)
+        else:
+            users = []
+        
+        user_data = {
+            'name': name,
+            'email': email,
+            'registration_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+        
+        # Controlla se l'utente esiste già
+        if not any(user['email'] == email for user in users):
+            users.append(user_data)
+            
+            with open(users_file, 'w') as f:
+                json.dump(users, f, indent=4)
+            return True
+        else:
+            return 'exists'
+    except Exception as e:
+        print(f"Errore nel salvataggio: {e}")
+        return False
+
+# Gestione della sessione
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
+
+# Pagina di intro
+if not st.session_state.logged_in:
+    st.markdown("""
+        <div style='text-align: center; padding: 2rem;'>
+            <h1 style='color: white; font-size: 2.5rem;'>Benvenuto in Pro Forex Analysis</h1>
+            <p style='color: #E0E0E0; font-size: 1.2rem; max-width: 800px; margin: 2rem auto;'>
+                Un'app professionale per l'analisi tecnica del forex con segnali di trading in tempo reale 
+                basati su intelligenza artificiale.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+            <div style='background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 10px;'>
+                <h3 style='color: white;'>Caratteristiche principali:</h3>
+                <ul style='color: #E0E0E0;'>
+                    <li>Analisi tecnica in tempo reale</li>
+                    <li>Segnali di trading automatici</li>
+                    <li>Multiple coppie forex</li>
+                    <li>Indicatori avanzati</li>
+                </ul>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown("<h3 style='color: white;'>Registrati per iniziare:</h3>", unsafe_allow_html=True)
+        name = st.text_input("Nome")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        
+        if st.button("Accedi all'App"):
+            if not name or not email or not password:
+                st.error("Per favore, compila tutti i campi")
+            elif len(name) < 2:
+                st.error("Il nome deve contenere almeno 2 caratteri")
+            elif not is_valid_email(email):
+                st.error("Per favore, inserisci un indirizzo email valido")
+            elif len(password) < 6:
+                st.error("La password deve contenere almeno 6 caratteri")
+            else:
+                # Salva i dati utente
+                save_result = save_user_data(name, email)
+                if save_result == True:
+                    st.success("Registrazione completata con successo!")
+                    st.session_state.logged_in = True
+                    st.rerun()
+                elif save_result == 'exists':
+                    st.info("Account già registrato. Puoi procedere con l'accesso.")
+                    st.session_state.logged_in = True
+                    st.rerun()
+                else:
+                    st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
+
+else:
+    # Il tuo codice esistente dell'app qui
+    
 # Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
