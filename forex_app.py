@@ -294,15 +294,15 @@ with col1:
         Con segnali di trading reali.
         </div>
         <h1 style='margin-top: 0.5rem; color: white; font-size: 2.2rem; font-weight: 300;'>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇺🇸</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇬🇧🇺🇸</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇯🇵</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇦🇺🇺🇸</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇨🇦</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇺🇸🇨🇭</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇳🇿🇺🇸</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇬🇧</span>
-<span style='letter-spacing: 3px; margin-right: 10px;'>🇪🇺🇯🇵</span><br>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇪🇺🇺🇸</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇬🇧🇺🇸</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇺🇸🇯🇵</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇦🇺🇺🇸</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇺🇸🇨🇦</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇺🇸🇨🇭</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇳🇿🇺🇸</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇪🇺🇬🇧</span>
+<span style='letter-spacing: 2px; margin-right: 10px;'>🇪🇺🇯🇵</span><br>
 Pro Forex Analysis</h1>
     """, unsafe_allow_html=True)
 
