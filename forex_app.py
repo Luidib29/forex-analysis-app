@@ -278,9 +278,9 @@ if not st.session_state.logged_in:
                     st.info("Account già registrato. Puoi procedere con l'accesso.")
                     st.session_state.logged_in = True
                     st.rerun()
-   else:
-                    st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
                 else:
+                    st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
+else:
     # Stili CSS
     st.markdown("""
         <style>
