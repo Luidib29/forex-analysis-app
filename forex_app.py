@@ -280,7 +280,7 @@ if not st.session_state.logged_in:
                     st.rerun()
                 else:
                     st.error("Si è verificato un errore durante la registrazione. Riprova più tardi.")
-                   else:
+                else:
     # Stili CSS
     st.markdown("""
         <style>
