@@ -6,5 +6,5 @@ matplotlib
 setuptools
 wheel
 mplfinance
-streamlit-authenticator==1.1.1
+streamlit-authenticator
 pyyaml
