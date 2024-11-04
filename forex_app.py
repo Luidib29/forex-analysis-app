@@ -1,4 +1,11 @@
 import streamlit as st
+# Configurazione pagina
+st.set_page_config(
+    page_title="Pro Forex Analysis",
+    page_icon="🇪🇺🇺🇸 🇬🇧🇺🇸 🇺🇸🇯🇵 🇦🇺🇺🇸 🇺🇸🇨🇦 🇺🇸🇨🇭 🇳🇿🇺🇸 🇪🇺🇬🇧 🇪🇺🇯🇵",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,14 +29,6 @@ authenticator = stauth.Authenticate(
     cookie_name=config['cookie']['name'],
     key=config['cookie']['key'],
     cookie_expiry_days=config['cookie']['expiry_days']
-)
-
-# Configurazione pagina
-st.set_page_config(
-    page_title="Pro Forex Analysis",
-    page_icon="🇪🇺🇺🇸 🇬🇧🇺🇸 🇺🇸🇯🇵 🇦🇺🇺🇸 🇺🇸🇨🇦 🇺🇸🇨🇭 🇳🇿🇺🇸 🇪🇺🇬🇧 🇪🇺🇯🇵",
-    layout="wide",
-    initial_sidebar_state="collapsed"
 )
 
 # Configura client Tiingo
