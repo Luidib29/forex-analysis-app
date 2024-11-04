@@ -223,12 +223,32 @@ def analisi_forex(symbol, pair_name):
         st.error(f"Errore nel download dei dati per {pair_name}: {str(e)}")
         return None
         # Gestione della sessione
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
+# Registrazione di nuovi utenti
+try:
+    if authenticator.register_user('Registrati', preauthorization=False):
+        st.success('Utente registrato con successo')
+        st.balloons()
+except Exception as e:
+    st.error(e)
 
-# Pagina di intro
-if not st.session_state.logged_in:
-    st.markdown("""
+# Gestione della sessione
+# Login
+name, authentication_status, username = authenticator.login('Login', 'main')
+
+if authentication_status == False:
+    st.error('Username/password non corretti')
+elif authentication_status == None:
+    st.warning('Inserisci username e password')
+elif authentication_status:
+    # Aggiungi questo all'inizio, dopo l'autenticazione riuscita
+    authenticator.logout('Logout', 'main', key='unique_key')
+     # Reset password
+    try:
+        if authenticator.reset_password(username, 'Reset password'):
+            st.success('Password resettata con successo')
+    except Exception as e:
+        st.error(e)
+     st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
             <h1 style='color: white; font-size: 2.5rem;'>Benvenuto in Pro Forex Analysis</h1>
             <p style='color: #E0E0E0; font-size: 1.2rem; max-width: 800px; margin: 2rem auto;'>
