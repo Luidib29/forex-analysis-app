@@ -237,14 +237,14 @@ def analisi_forex(symbol, pair_name):
         # Gestione della sessione
 # Registrazione di nuovi utenti
 try:
-    if authenticator.register_user('Registrati', 'main'):
+    if authenticator.register_user('Registrati', 'unrendered'):
         st.success('Utente registrato con successo')
         st.balloons()
 except Exception as e:
     st.error(e)
 
 # Login
-name, authentication_status, username = authenticator.login('Login', 'main')
+name, authentication_status, username = authenticator.login('Login', 'unrendered')
 
 if authentication_status == False:
     st.error('Username/password non corretti')
@@ -252,11 +252,11 @@ elif authentication_status == None:
     st.warning('Inserisci username e password')
 elif authentication_status:
     # Logout button
-    authenticator.logout('Logout', 'main')
+    authenticator.logout('Logout', 'unrendered')
     
     # Reset password
     try:
-        if authenticator.reset_password(username, 'Reset password', 'main'):
+        if authenticator.reset_password(username, 'Reset password', 'unrendered'):
             st.success('Password resettata con successo')
     except Exception as e:
         st.error(e)
