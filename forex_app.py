@@ -28,9 +28,6 @@ authenticator = stauth.Authenticate(
 
 # Configurazione pagina
 st.set_page_config(
-
-# Configurazione pagina
-st.set_page_config(
     page_title="Pro Forex Analysis",
     page_icon="🇪🇺🇺🇸 🇬🇧🇺🇸 🇺🇸🇯🇵 🇦🇺🇺🇸 🇺🇸🇨🇦 🇺🇸🇨🇭 🇳🇿🇺🇸 🇪🇺🇬🇧 🇪🇺🇯🇵",
     layout="wide",
