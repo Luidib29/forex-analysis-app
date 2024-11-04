@@ -249,7 +249,7 @@ elif authentication_status:
     except Exception as e:
         st.error(e)
         
-      st.markdown("""
+       st.markdown("""
         <div style='text-align: center; padding: 2rem;'>
             <h1 style='color: white; font-size: 2.5rem;'>Benvenuto in Pro Forex Analysis</h1>
             <p style='color: #E0E0E0; font-size: 1.2rem; max-width: 800px; margin: 2rem auto;'>
