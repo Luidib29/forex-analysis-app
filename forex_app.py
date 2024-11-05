@@ -24,10 +24,19 @@ st.set_page_config(
 # Inizializzazione dello stato di sessione
 if 'authentication_status' not in st.session_state:
     st.session_state['authentication_status'] = None
+if 'registered_users' not in st.session_state:
+    st.session_state.registered_users = {}
 
 # Configurazione dell'authenticator
+credentials = {
+    'usernames': st.session_state.registered_users
+} if st.session_state.registered_users else {
+    'usernames': {}
+}
+
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
+    config['credentials']['usernames'].update(st.session_state.registered_users)
 
 authenticator = stauth.Authenticate(
     config['credentials'],
@@ -46,8 +55,11 @@ elif authentication_status is None:
         if authenticator.register_user('Registrati', preauthorization=False):
             st.success('Utente registrato con successo!')
             st.balloons()
-            with open('config.yaml', 'w') as file:
-                yaml.dump(config, file, default_flow_style=False)
+            # Aggiorna session state con i nuovi utenti registrati
+            st.session_state.registered_users = config['credentials']['usernames']
+            # Debug: mostra utenti registrati
+            if st.sidebar.checkbox("👥 Mostra utenti registrati"):
+                st.sidebar.write("Utenti registrati:", st.session_state.registered_users)
     except Exception as e:
         st.error(e)
 
@@ -55,14 +67,18 @@ if authentication_status:
     # Sidebar per utente autenticato
     with st.sidebar:
         st.write(f'👤 Benvenuto *{name}*')
-        authenticator.logout('Logout', 'main')  # Cambiato da 'sidebar' a 'main'
+        authenticator.logout('Logout', 'main')
         
-       # Reset password
+        # Mostra utenti registrati (per debug)
+        if st.checkbox("👥 Utenti registrati"):
+            st.write("Utenti nel sistema:", st.session_state.registered_users)
+        
+        # Reset password
         try:
             if authenticator.reset_password(username, 'Reset Password', location='main'):
                 st.success('Password resettata con successo')
-                with open('config.yaml', 'w') as file:
-                    yaml.dump(config, file, default_flow_style=False)
+                # Aggiorna session state dopo reset password
+                st.session_state.registered_users = config['credentials']['usernames']
         except Exception as e:
             st.error(e)
 
