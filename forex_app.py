@@ -36,40 +36,35 @@ authenticator = stauth.Authenticate(
     config['cookie']['expiry_days']
 )
 # Sistema di autenticazione
-name, authentication_status, username = authenticator.login('Login', 'sidebar')
+name, authentication_status, username = authenticator.login('Login', 'main')  # Cambiato da 'sidebar' a 'main'
 
 if authentication_status is False:
     st.error('Username/password non corretti')
 elif authentication_status is None:
-    st.warning('Inserisci username e password')
-    
     # Form di registrazione (quando non si è loggati)
-    with st.expander("📝 Registrati"):
-        try:
-            if authenticator.register_user('Registrazione', preauthorization=False):
-                st.success('Utente registrato con successo!')
-                st.balloons()
-                with open('config.yaml', 'w') as file:
-                    yaml.dump(config, file, default_flow_style=False)
-        except Exception as e:
-            st.error(e)
+    try:
+        if authenticator.register_user('Registrati', preauthorization=False):
+            st.success('Utente registrato con successo!')
+            st.balloons()
+            with open('config.yaml', 'w') as file:
+                yaml.dump(config, file, default_flow_style=False)
+    except Exception as e:
+        st.error(e)
 
 if authentication_status:
     # Sidebar per utente autenticato
     with st.sidebar:
         st.write(f'👤 Benvenuto *{name}*')
-        authenticator.logout('Logout', 'main')
+        authenticator.logout('Logout', 'main')  # Cambiato da 'sidebar' a 'main'
         
         # Reset password
-        with st.expander("🔑 Reset Password"):
-            try:
-                if authenticator.reset_password(username, 'Reset Password', location='main'):
-                    st.success('Password resettata con successo')
-                    with open('config.yaml', 'w') as file:
-                        yaml.dump(config, file, default_flow_style=False)
-            except Exception as e:
-                st.error(e)
-
+        try:
+            if authenticator.reset_password(username, 'Reset Password', location='main'):  # Aggiunto location='main'
+                st.success('Password resettata con successo')
+                with open('config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+        except Exception as e:
+            st.error(e)
     # Configurazione Tiingo e dizionario forex
     config = {
         'session': True,
