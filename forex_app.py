@@ -66,13 +66,13 @@ if authentication_status:
         except Exception as e:
             st.error(e)
         try:
-    with open('config.yaml', 'r') as file:
-        debug_config = yaml.safe_load(file)
-        if st.sidebar.checkbox("Debug: Mostra utenti registrati"):
-            st.sidebar.write("Config attuale:", debug_config)
-except Exception as e:
-    if st.sidebar.checkbox("Debug: Mostra errori"):
-        st.sidebar.error(f"Errore lettura config: {str(e)}")
+        with open('config.yaml', 'r') as file:
+            debug_config = yaml.safe_load(file)
+            if st.sidebar.checkbox("Debug: Mostra utenti registrati"):
+                st.sidebar.write("Config attuale:", debug_config)
+    except Exception as e:
+        if st.sidebar.checkbox("Debug: Mostra errori"):
+            st.sidebar.error(f"Errore lettura config: {str(e)}")
     # Configurazione Tiingo e dizionario forex
     config = {
         'session': True,
