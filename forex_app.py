@@ -22,11 +22,11 @@ if 'registered_users' not in st.session_state:
     st.session_state.registered_users = {
         ADMIN_USERNAME: {
             'name': 'Admin',
-            'password': 'barcecata24',
+            'password': ADMIN_PASSWORD,
             'email': 'traderfrx68@gmail.com',
             'is_admin': True
-         }
-    }   
+        }
+    } 
 
 # Configurazione pagina
 st.set_page_config(
