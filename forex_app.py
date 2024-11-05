@@ -57,22 +57,24 @@ if authentication_status:
         st.write(f'👤 Benvenuto *{name}*')
         authenticator.logout('Logout', 'main')  # Cambiato da 'sidebar' a 'main'
         
-        # Reset password
+       # Reset password
         try:
-            if authenticator.reset_password(username, 'Reset Password', location='main'):  # Aggiunto location='main'
+            if authenticator.reset_password(username, 'Reset Password', location='main'):
                 st.success('Password resettata con successo')
                 with open('config.yaml', 'w') as file:
                     yaml.dump(config, file, default_flow_style=False)
         except Exception as e:
             st.error(e)
+
+        # Codice di debug - nota l'indentazione allineata con il try sopra
         try:
-        with open('config.yaml', 'r') as file:
-            debug_config = yaml.safe_load(file)
-            if st.sidebar.checkbox("Debug: Mostra utenti registrati"):
-                st.sidebar.write("Config attuale:", debug_config)
-    except Exception as e:
-        if st.sidebar.checkbox("Debug: Mostra errori"):
-            st.sidebar.error(f"Errore lettura config: {str(e)}")
+            with open('config.yaml', 'r') as file:
+                debug_config = yaml.safe_load(file)
+                if st.sidebar.checkbox("Debug: Mostra utenti registrati"):
+                    st.sidebar.write("Config attuale:", debug_config)
+        except Exception as e:
+            if st.sidebar.checkbox("Debug: Mostra errori"):
+                st.sidebar.error(f"Errore lettura config: {str(e)}")
             
     # Configurazione Tiingo e dizionario forex
     config = {
