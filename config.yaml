@@ -1,6 +1,6 @@
-cookie:
-  expiry_days: 30
-  key: "any_random_key_here_123"
-  name: "forex_analysis_cookie"
 credentials:
   usernames: {}
+cookie:
+  expiry_days: 30
+  key: "forex_analysis_app_key_123"
+  name: "forex_analytics_cookie"
