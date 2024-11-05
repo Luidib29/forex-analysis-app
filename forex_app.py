@@ -20,16 +20,60 @@ import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
 
-# Configurazione dell'authenticator
+# Inizializzazione dello stato di sessione
+if 'authentication_status' not in st.session_state:
+    st.session_state['authentication_status'] = None
+
+# Caricamento della configurazione
 with open('config.yaml') as file:
     config = yaml.load(file, Loader=SafeLoader)
 
+# Inizializzazione dell'authenticator
 authenticator = stauth.Authenticate(
-    credentials=config['credentials'],
-    cookie_name=config['cookie']['name'],
-    key=config['cookie']['key'],
-    cookie_expiry_days=config['cookie']['expiry_days']
+    config['credentials'],
+    config['cookie']['name'],
+    config['cookie']['key'],
+    config['cookie']['expiry_days']
 )
+
+# Layout per il login/registrazione
+if st.session_state['authentication_status'] is None:
+    tab1, tab2 = st.tabs(["Login", "Registrazione"])
+    
+    with tab1:
+        name, authentication_status, username = authenticator.login('Login', 'main')
+        if authentication_status == False:
+            st.error('Username/password non corretti')
+        elif authentication_status == None:
+            st.warning('Inserisci username e password')
+    
+    with tab2:
+        try:
+            if authenticator.register_user('Registrazione', preauthorization=False):
+                st.success('Utente registrato con successo!')
+                st.balloons()
+                # Aggiorna il file YAML
+                with open('config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+        except Exception as e:
+            st.error(e)
+
+# Gestione utente autenticato
+if st.session_state['authentication_status']:
+    # Mostra il pulsante di logout
+    authenticator.logout('Logout', 'sidebar')
+    
+    # Opzione per il reset della password
+    with st.sidebar:
+        try:
+            if authenticator.reset_password(st.session_state['username'], 'Reset Password'):
+                st.success('Password resettata con successo')
+                # Aggiorna il file YAML
+                with open('config.yaml', 'w') as file:
+                    yaml.dump(config, file, default_flow_style=False)
+        except Exception as e:
+            st.error(e)
+
 
 # Configura client Tiingo
 config = {
