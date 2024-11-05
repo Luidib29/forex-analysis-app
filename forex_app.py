@@ -16,15 +16,6 @@ from yaml.loader import SafeLoader
 if 'registered_users' not in st.session_state:
     st.session_state.registered_users = {}
 
-# Carica gli utenti esistenti dal config.yaml
-try:
-    with open('config.yaml', 'r') as file:
-        current_config = yaml.safe_load(file)
-        if 'credentials' in current_config and 'usernames' in current_config['credentials']:
-            st.session_state.registered_users.update(current_config['credentials']['usernames'])
-except Exception as e:
-    print(f"Errore nel caricamento degli utenti: {str(e)}")
-
 # Configurazione pagina
 st.set_page_config(
     page_title="Pro Forex Analysis",
@@ -42,49 +33,48 @@ if 'registered_users' not in st.session_state:
 # Configurazione dell'authenticator
 credentials = {
     'usernames': st.session_state.registered_users
-} if st.session_state.registered_users else {
-    'usernames': {}
 }
 
-with open('config.yaml') as file:
-    config = yaml.load(file, Loader=SafeLoader)
-    config['credentials']['usernames'].update(st.session_state.registered_users)
+cookie_config = {
+    'expiry_days': 30,
+    'key': 'forex_analysis_app_key_123',
+    'name': 'forex_analytics_cookie'
+}
 
 authenticator = stauth.Authenticate(
-    config['credentials'],
-    config['cookie']['name'],
-    config['cookie']['key'],
-    config['cookie']['expiry_days']
+    credentials,
+    cookie_config['name'],
+    cookie_config['key'],
+    cookie_config['expiry_days']
 )
 # Sistema di autenticazione
 name, authentication_status, username = authenticator.login('Login', 'main')  # Cambiato da 'sidebar' a 'main'
 
 if authentication_status is False:
     st.error('Username/password non corretti')
+# Parte di registrazione
 elif authentication_status is None:
-    # Form di registrazione
     try:
         if authenticator.register_user('Registrati', preauthorization=False):
+            # Aggiorna lo state con il nuovo utente
+            st.session_state.registered_users = credentials['usernames']
             st.success('Utente registrato con successo!')
             st.balloons()
             
-            # Aggiorna immediatamente lo state con il nuovo utente
-            with open('config.yaml', 'r') as file:
-                current_config = yaml.safe_load(file)
-                if 'credentials' in current_config and 'usernames' in current_config['credentials']:
-                    st.session_state.registered_users = current_config['credentials']['usernames']
-                    
-                    # Debug: mostra il nuovo utente registrato
-                    st.sidebar.write("Nuovo utente registrato!")
-                    st.sidebar.json(st.session_state.registered_users)
+            # Debug nella sidebar
+            with st.sidebar:
+                st.write("Nuovo utente registrato!")
+                st.write("Utenti attuali:", st.session_state.registered_users)
     except Exception as e:
         st.error(e)
         st.sidebar.error(f"Errore durante la registrazione: {str(e)}")
 
-    # Debug info sempre visibile (fuori dal try/except e fuori dal if authenticator.register_user)
-    if st.sidebar.checkbox("Debug: Mostra stato registrazione"):
-        st.sidebar.write("Session State:", st.session_state)
-        st.sidebar.write("Utenti registrati:", st.session_state.registered_users)
+
+     # Debug info
+    with st.sidebar:
+        if st.checkbox("🔍 Debug: Stato Registrazione"):
+            st.write("Utenti registrati:", st.session_state.registered_users)
+            st.write("Credentials:", credentials)
 
 if authentication_status:
     # Sidebar per utente autenticato
