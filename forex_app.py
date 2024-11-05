@@ -41,7 +41,12 @@ if st.session_state['authentication_status'] is None:
     tab1, tab2 = st.tabs(["Login", "Registrazione"])
     
     with tab1:
-        name, authentication_status, username = authenticator.login('Login', 'main')
+        # Cambiato 'main' in 'unrendered'
+        name, authentication_status, username = authenticator.login('Login', 'unrendered')
+        st.session_state['name'] = name
+        st.session_state['authentication_status'] = authentication_status
+        st.session_state['username'] = username
+        
         if authentication_status == False:
             st.error('Username/password non corretti')
         elif authentication_status == None:
@@ -60,13 +65,13 @@ if st.session_state['authentication_status'] is None:
 
 # Gestione utente autenticato
 if st.session_state['authentication_status']:
-    # Mostra il pulsante di logout
+    # Mostra il pulsante di logout nella sidebar
     authenticator.logout('Logout', 'sidebar')
     
     # Opzione per il reset della password
     with st.sidebar:
         try:
-            if authenticator.reset_password(st.session_state['username'], 'Reset Password'):
+            if authenticator.reset_password(st.session_state['username'], 'Reset Password', 'unrendered'):
                 st.success('Password resettata con successo')
                 # Aggiorna il file YAML
                 with open('config.yaml', 'w') as file:
