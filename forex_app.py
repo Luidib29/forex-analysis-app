@@ -73,6 +73,7 @@ if authentication_status:
     except Exception as e:
         if st.sidebar.checkbox("Debug: Mostra errori"):
             st.sidebar.error(f"Errore lettura config: {str(e)}")
+            
     # Configurazione Tiingo e dizionario forex
     config = {
         'session': True,
