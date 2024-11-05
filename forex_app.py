@@ -12,9 +12,20 @@ import os
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
-# Inizializzazione dello stato
+
+# All'inizio del file, dopo l'inizializzazione di session_state
+# Definisci l'admin
+ADMIN_USERNAME = "admin"  # Puoi cambiare questo con il tuo username admin
+ADMIN_PASSWORD = "your_secure_password"  # Cambia con una password sicura
+
 if 'registered_users' not in st.session_state:
-    st.session_state.registered_users = {}
+    st.session_state.registered_users = {
+        ADMIN_USERNAME: {
+            'name': 'Admin',
+            'password': barcecata24@,
+            'email': 'traderfrx68@gmail.com',
+            'is_admin': True
+        }
 
 # Configurazione pagina
 st.set_page_config(
@@ -76,15 +87,27 @@ elif authentication_status is None:
             st.write("Utenti registrati:", st.session_state.registered_users)
             st.write("Credentials:", credentials)
 
+# Nella parte di visualizzazione della sidebar
 if authentication_status:
-    # Sidebar per utente autenticato
     with st.sidebar:
         st.write(f'👤 Benvenuto *{name}*')
-        authenticator.logout('Logout', 'main')
         
-        # Mostra utenti registrati (per debug)
-        if st.checkbox("👥 Utenti registrati"):
-            st.write("Utenti nel sistema:", st.session_state.registered_users)
+        # Mostra debug info solo se l'utente è admin
+        if username == ADMIN_USERNAME:
+            st.markdown("### 🔐 Admin Panel")
+            if st.checkbox("👥 Mostra Utenti Registrati"):
+                st.write("Utenti nel sistema:")
+                # Nascondi le password e altre info sensibili
+                safe_users = {}
+                for user, details in st.session_state.registered_users.items():
+                    safe_users[user] = {
+                        'name': details.get('name'),
+                        'email': details.get('email'),
+                        'registered_at': details.get('registered_at', 'N/A')
+                    }
+                st.json(safe_users)
+        
+        authenticator.logout('Logout', 'main')
         
         # Reset password
         try:
