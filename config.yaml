@@ -1,6 +1,6 @@
 cookie:
   expiry_days: 30
-  key: "some_signature_key"
-  name: "some_cookie_name"
+  key: "random_signature_key_12345"
+  name: "forex_analysis_cookie"
 credentials:
-  usernames: {}  # Sarà popolato automaticamente quando gli utenti si registrano
+  usernames: {}
