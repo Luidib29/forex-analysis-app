@@ -12,6 +12,18 @@ import os
 import streamlit_authenticator as stauth
 import yaml
 from yaml.loader import SafeLoader
+# Inizializzazione dello stato
+if 'registered_users' not in st.session_state:
+    st.session_state.registered_users = {}
+
+# Carica gli utenti esistenti dal config.yaml
+try:
+    with open('config.yaml', 'r') as file:
+        current_config = yaml.safe_load(file)
+        if 'credentials' in current_config and 'usernames' in current_config['credentials']:
+            st.session_state.registered_users.update(current_config['credentials']['usernames'])
+except Exception as e:
+    print(f"Errore nel caricamento degli utenti: {str(e)}")
 
 # Configurazione pagina
 st.set_page_config(
@@ -50,18 +62,29 @@ name, authentication_status, username = authenticator.login('Login', 'main')  # 
 if authentication_status is False:
     st.error('Username/password non corretti')
 elif authentication_status is None:
-    # Form di registrazione (quando non si è loggati)
+    # Form di registrazione
     try:
         if authenticator.register_user('Registrati', preauthorization=False):
             st.success('Utente registrato con successo!')
             st.balloons()
-            # Aggiorna session state con i nuovi utenti registrati
-            st.session_state.registered_users = config['credentials']['usernames']
-            # Debug: mostra utenti registrati
-            if st.sidebar.checkbox("👥 Mostra utenti registrati"):
-                st.sidebar.write("Utenti registrati:", st.session_state.registered_users)
+            
+            # Aggiorna immediatamente lo state con il nuovo utente
+            with open('config.yaml', 'r') as file:
+                current_config = yaml.safe_load(file)
+                if 'credentials' in current_config and 'usernames' in current_config['credentials']:
+                    st.session_state.registered_users = current_config['credentials']['usernames']
+                    
+                    # Debug: mostra il nuovo utente registrato
+                    st.sidebar.write("Nuovo utente registrato!")
+                    st.sidebar.json(st.session_state.registered_users)
     except Exception as e:
         st.error(e)
+        st.sidebar.error(f"Errore durante la registrazione: {str(e)}")
+
+    # Debug info sempre visibile (fuori dal try/except e fuori dal if authenticator.register_user)
+    if st.sidebar.checkbox("Debug: Mostra stato registrazione"):
+        st.sidebar.write("Session State:", st.session_state)
+        st.sidebar.write("Utenti registrati:", st.session_state.registered_users)
 
 if authentication_status:
     # Sidebar per utente autenticato
