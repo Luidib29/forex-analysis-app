@@ -1,6 +1,6 @@
+credentials:
+  usernames: {}
 cookie:
   expiry_days: 30
   key: "random_signature_key_12345"
-  name: "forex_analysis_cookie"
-credentials:
-  usernames: {}
+  name: "forex_app_cookie"
