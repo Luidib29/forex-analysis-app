@@ -1,10 +1,6 @@
-credentials:
-  usernames:
-    admin:
-      email: admin@admin.com
-      name: Admin
-      password: $2b$12$LQgbY1wKzZ8J5jBzqXnK9uqr6AyvtGNo.XeYF1SYyuXGZNHqyqsUe
 cookie:
   expiry_days: 30
-  key: random_signature_key
-  name: forex_auth_cookie
+  key: "some_signature_key"
+  name: "some_cookie_name"
+credentials:
+  usernames: {}  # Sarà popolato automaticamente quando gli utenti si registrano
