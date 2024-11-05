@@ -16,7 +16,7 @@ from yaml.loader import SafeLoader
 # All'inizio del file, dopo l'inizializzazione di session_state
 # Definisci l'admin
 ADMIN_USERNAME = "admin"  # Puoi cambiare questo con il tuo username admin
-ADMIN_PASSWORD = "your_secure_password"  # Cambia con una password sicura
+ADMIN_PASSWORD = "barcecata24"  # Cambia con una password sicura
 
 if 'registered_users' not in st.session_state:
     st.session_state.registered_users = {
