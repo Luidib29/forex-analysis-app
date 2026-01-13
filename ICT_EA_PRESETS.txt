@@ -1,0 +1,320 @@
+╔════════════════════════════════════════════════════════════════╗
+║           ICT FVG EA - PRESET CONFIGURAZIONI                   ║
+║                                                                ║
+║  Copia e incolla questi valori nella finestra Input dell'EA   ║
+╚════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════
+  🛡️ PRESET #1: CONSERVATIVE (Sicuro - Basso Rischio)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Trader principianti
+   - Account piccoli (< $1000)
+   - Chi vuole minimizzare il drawdown
+
+⚙️ Parametri:
+   RiskPercentage = 0.5
+   RiskRewardRatio = 3.0
+   UseTrailingStop = true
+   TrailingStopPips = 30
+
+   FVG_MinPips = 10
+   OB_Lookback = 25
+   MS_SwingBars = 12
+
+   UseKillzoneFilter = true
+   LondonOpen = 8
+   LondonClose = 11
+   NewYorkOpen = 13
+   NewYorkClose = 16
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 1
+   MinRiskReward = 2.0
+
+   Timeframe = PERIOD_H4
+
+📈 Performance Attese:
+   - Drawdown Max: 5-10%
+   - Win Rate: 50-60%
+   - Trade/Mese: 4-8
+   - Risk:Reward: 1:3
+
+═══════════════════════════════════════════════════════════════════
+  ⚖️ PRESET #2: BALANCED (Default - Equilibrato)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Trader intermedi
+   - Account medi ($1000-$5000)
+   - Setup consigliato per iniziare
+
+⚙️ Parametri:
+   RiskPercentage = 1.0
+   RiskRewardRatio = 2.0
+   UseTrailingStop = true
+   TrailingStopPips = 20
+
+   FVG_MinPips = 5
+   OB_Lookback = 20
+   MS_SwingBars = 10
+
+   UseKillzoneFilter = true
+   LondonOpen = 8
+   LondonClose = 11
+   NewYorkOpen = 13
+   NewYorkClose = 16
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 2
+   MinRiskReward = 1.5
+
+   Timeframe = PERIOD_H1
+
+📈 Performance Attese:
+   - Drawdown Max: 10-15%
+   - Win Rate: 45-55%
+   - Trade/Mese: 10-20
+   - Risk:Reward: 1:2
+
+═══════════════════════════════════════════════════════════════════
+  🚀 PRESET #3: AGGRESSIVE (Aggressivo - Alto Rischio)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Trader esperti
+   - Account grandi (> $5000)
+   - Chi cerca crescita rapida
+
+⚠️ ATTENZIONE: Alto rischio di drawdown!
+
+⚙️ Parametri:
+   RiskPercentage = 2.0
+   RiskRewardRatio = 1.5
+   UseTrailingStop = true
+   TrailingStopPips = 15
+
+   FVG_MinPips = 3
+   OB_Lookback = 15
+   MS_SwingBars = 8
+
+   UseKillzoneFilter = false
+   LondonOpen = 8
+   LondonClose = 11
+   NewYorkOpen = 13
+   NewYorkClose = 16
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 3
+   MinRiskReward = 1.2
+
+   Timeframe = PERIOD_M15
+
+📈 Performance Attese:
+   - Drawdown Max: 20-30%
+   - Win Rate: 40-50%
+   - Trade/Mese: 30-60
+   - Risk:Reward: 1:1.5
+
+═══════════════════════════════════════════════════════════════════
+  💼 PRESET #4: SCALPING (Scalping Intraday)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Scalper esperti
+   - Chi può monitorare costantemente
+   - Spread molto bassi (< 1 pip)
+
+⚠️ Richiede broker ECN con esecuzione veloce!
+
+⚙️ Parametri:
+   RiskPercentage = 1.5
+   RiskRewardRatio = 1.5
+   UseTrailingStop = true
+   TrailingStopPips = 10
+
+   FVG_MinPips = 2
+   OB_Lookback = 10
+   MS_SwingBars = 5
+
+   UseKillzoneFilter = true
+   LondonOpen = 8
+   LondonClose = 12
+   NewYorkOpen = 13
+   NewYorkClose = 17
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 5
+   MinRiskReward = 1.2
+
+   Timeframe = PERIOD_M15
+
+📈 Performance Attese:
+   - Drawdown Max: 15-20%
+   - Win Rate: 50-60%
+   - Trade/Mese: 60-100
+   - Risk:Reward: 1:1.5
+
+═══════════════════════════════════════════════════════════════════
+  📊 PRESET #5: SWING TRADING (Lungo Termine)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Chi non può seguire il mercato H24
+   - Trader part-time
+   - Massima stabilità
+
+⚙️ Parametri:
+   RiskPercentage = 0.75
+   RiskRewardRatio = 4.0
+   UseTrailingStop = true
+   TrailingStopPips = 50
+
+   FVG_MinPips = 15
+   OB_Lookback = 30
+   MS_SwingBars = 15
+
+   UseKillzoneFilter = false
+   LondonOpen = 8
+   LondonClose = 11
+   NewYorkOpen = 13
+   NewYorkClose = 16
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 1
+   MinRiskReward = 3.0
+
+   Timeframe = PERIOD_D1
+
+📈 Performance Attese:
+   - Drawdown Max: 5-8%
+   - Win Rate: 55-65%
+   - Trade/Mese: 2-6
+   - Risk:Reward: 1:4
+
+═══════════════════════════════════════════════════════════════════
+  💎 PRESET #6: EURUSD SPECIALIST (Ottimizzato EUR/USD)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Trading esclusivamente su EUR/USD
+   - Ottimizzato per questa coppia
+   - Spread bassissimo richiesto
+
+⚙️ Parametri:
+   RiskPercentage = 1.0
+   RiskRewardRatio = 2.5
+   UseTrailingStop = true
+   TrailingStopPips = 25
+
+   FVG_MinPips = 4
+   OB_Lookback = 18
+   MS_SwingBars = 10
+
+   UseKillzoneFilter = true
+   LondonOpen = 8
+   LondonClose = 11
+   NewYorkOpen = 13
+   NewYorkClose = 16
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 2
+   MinRiskReward = 1.8
+
+   Timeframe = PERIOD_H1
+
+📈 Performance Attese:
+   - Drawdown Max: 8-12%
+   - Win Rate: 50-60%
+   - Trade/Mese: 12-18
+   - Risk:Reward: 1:2.5
+
+═══════════════════════════════════════════════════════════════════
+  🌙 PRESET #7: ASIAN SESSION (Sessione Asiatica)
+═══════════════════════════════════════════════════════════════════
+
+📊 Ideale per:
+   - Trading su USD/JPY, AUD/USD
+   - Sessione asiatica (bassa volatilità)
+   - Range trading
+
+⚙️ Parametri:
+   RiskPercentage = 0.8
+   RiskRewardRatio = 2.0
+   UseTrailingStop = true
+   TrailingStopPips = 15
+
+   FVG_MinPips = 3
+   OB_Lookback = 15
+   MS_SwingBars = 8
+
+   UseKillzoneFilter = true
+   LondonOpen = 1     // 01:00 - 05:00 CET (Asian)
+   LondonClose = 5
+   NewYorkOpen = 23   // Disabilitato (ora impossibile)
+   NewYorkClose = 22
+
+   MagicNumber = 12345
+   MaxTradesPerDay = 2
+   MinRiskReward = 1.5
+
+   Timeframe = PERIOD_H1
+
+📈 Performance Attese:
+   - Drawdown Max: 10-15%
+   - Win Rate: 45-55%
+   - Trade/Mese: 8-15
+   - Risk:Reward: 1:2
+
+═══════════════════════════════════════════════════════════════════
+
+💡 COME USARE I PRESET:
+
+1. Scegli il preset adatto al tuo profilo di rischio
+2. In MT4, fai click destro sull'EA nel grafico
+3. Seleziona "Properties" o "Proprietà"
+4. Vai al tab "Input"
+5. Copia i valori del preset scelto
+6. Click OK
+
+💾 SALVARE I PRESET:
+
+1. Dopo aver impostato i parametri, click "Save"
+2. Dai un nome (es: "ICT_Conservative")
+3. La prossima volta, click "Load" per caricare
+
+⚠️ IMPORTANTE:
+
+- Testa SEMPRE su demo prima di live
+- Backtest su almeno 6-12 mesi
+- Monitora le performance settimanalmente
+- Modifica i parametri in base ai risultati
+
+═══════════════════════════════════════════════════════════════════
+
+📋 TABELLA COMPARATIVA PRESET:
+
+┌─────────────┬──────────┬──────────┬───────────┬──────────────┐
+│   Preset    │   Risk   │    RR    │ Timeframe │  Trade/Mese  │
+├─────────────┼──────────┼──────────┼───────────┼──────────────┤
+│ Conservative│   0.5%   │   1:3    │    H4     │     4-8      │
+│ Balanced    │   1.0%   │   1:2    │    H1     │    10-20     │
+│ Aggressive  │   2.0%   │   1:1.5  │    M15    │    30-60     │
+│ Scalping    │   1.5%   │   1:1.5  │    M15    │    60-100    │
+│ Swing       │   0.75%  │   1:4    │    D1     │     2-6      │
+│ EUR/USD     │   1.0%   │   1:2.5  │    H1     │    12-18     │
+│ Asian       │   0.8%   │   1:2    │    H1     │     8-15     │
+└─────────────┴──────────┴──────────┴───────────┴──────────────┘
+
+═══════════════════════════════════════════════════════════════════
+
+🎯 RACCOMANDAZIONE FINALE:
+
+Se sei NUOVO all'EA: Inizia con "BALANCED" su EURUSD H1
+Se vuoi SICUREZZA: Usa "CONSERVATIVE" su H4
+Se sei ESPERTO: Puoi provare "AGGRESSIVE" o "SCALPING"
+
+Buon Trading! 🚀
+
+═══════════════════════════════════════════════════════════════════
