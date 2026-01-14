@@ -289,6 +289,10 @@ int AnalyzeMarketStructure()
    int highCount = 0;
    int lowCount = 0;
 
+   // Initialize arrays
+   ArrayInitialize(swingHighs, 0);
+   ArrayInitialize(swingLows, 0);
+
    // Find last 3 swing highs and lows
    for(int i = MS_SwingBars; i < 100 && (highCount < 3 || lowCount < 3); i++)
    {
