@@ -23,10 +23,10 @@ input int      MS_SwingBars = 10;              // Market Structure swing detecti
 
 // === KILLZONE TIMING ===
 input bool     UseKillzoneFilter = true;       // Enable Killzone timing filter
-input int      LondonOpen = 8;                 // London Killzone start (CET)
-input int      LondonClose = 11;               // London Killzone end (CET)
-input int      NewYorkOpen = 13;               // New York Killzone start (CET)
-input int      NewYorkClose = 16;              // New York Killzone end (CET)
+input int      LondonOpen = 9;                 // London Killzone start (Server Time)
+input int      LondonClose = 15;               // London Killzone end (Server Time)
+input int      NewYorkOpen = 17;               // New York Killzone start (Server Time)
+input int      NewYorkClose = 23;              // New York Killzone end (Server Time)
 
 // === TRADE MANAGEMENT ===
 input int      MagicNumber = 12345;            // EA Magic Number
