@@ -25,7 +25,7 @@ input int      MS_SwingBars = 10;              // Market Structure swing detecti
 input bool     UseKillzoneFilter = true;       // Enable Killzone timing filter
 input int      LondonOpen = 9;                 // London Killzone start (Server Time)
 input int      LondonClose = 15;               // London Killzone end (Server Time)
-input int      NewYorkOpen = 17;               // New York Killzone start (Server Time)
+input int      NewYorkOpen = 16;               // New York Killzone start (Server Time)
 input int      NewYorkClose = 23;              // New York Killzone end (Server Time)
 
 // === TRADE MANAGEMENT ===
