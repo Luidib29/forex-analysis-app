@@ -105,6 +105,51 @@ MaxSpread_XAG = 30
 
 ## Funzionalità
 
+### Pannello Statistiche (NUOVO v2.0)
+Pannello grafico in tempo reale con statistiche complete:
+
+**Stato Corrente:**
+- Simbolo attivo
+- Sessione corrente (Asian/London/NY AM/NY PM)
+- Bias M15 (Bullish/Bearish/None)
+- Stato FVG (None/BULL/BEAR + [MIT]/[REJ])
+- Spread corrente
+
+**Statistiche Giornaliere (TODAY):**
+- Trades totali (Win/Loss)
+- Win Rate %
+- Profit netto $
+- Profit Factor
+- Best/Worst trade
+
+**Statistiche Complessive (TOTAL):**
+- Trades totali storici
+- Win Rate % complessivo
+- Net Profit $
+- Profit Factor
+- Max Drawdown $
+- Best/Worst trade storico
+- Max Consecutive Wins/Losses
+
+**Info Account:**
+- Balance
+- Equity (colorato verde/rosso)
+- Open Trades
+- Floating P/L
+
+**Parametri Pannello:**
+- `ShowPanel`: true/false - Mostra/nascondi pannello
+- `PanelCorner`: Posizione (Top Left/Right, Bottom Left/Right)
+- `PanelX/Y`: Offset posizione
+- `PanelBgColor`: Colore sfondo
+- `PanelBorderColor`: Colore bordo
+- `PanelTitleColor`: Colore titolo
+- `PanelTextColor`: Colore testo
+- `PanelProfitColor`: Colore profit (default: Lime)
+- `PanelLossColor`: Colore loss (default: Red)
+- `PanelFontSize`: Dimensione font
+- `PanelFontName`: Nome font (default: Consolas)
+
 ### Filtro Notizie
 L'EA include un filtro base per:
 - NFP (Non-Farm Payrolls) - primo venerdì del mese
@@ -154,6 +199,11 @@ Tutti gli eventi vengono loggati nella scheda "Esperti":
 Questo EA è fornito solo a scopo educativo. Il trading comporta rischi significativi. Testa sempre su conto demo prima di usare su conto reale.
 
 ## Versione
+- v2.00 - Aggiunto pannello statistiche completo
+  - Statistiche giornaliere e complessive
+  - Info account in tempo reale
+  - Stato FVG e sessione
+  - Personalizzazione colori e posizione
 - v1.00 - Release iniziale
 - Ottimizzato per RoboForex Conto Cent
 - GMT+1 Server Time

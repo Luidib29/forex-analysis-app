@@ -6,7 +6,7 @@
 //+------------------------------------------------------------------+
 #property copyright "ICT Silver Bullet EA"
 #property link      ""
-#property version   "1.00"
+#property version   "2.00"
 #property strict
 
 //+------------------------------------------------------------------+
@@ -33,6 +33,14 @@ enum ENUM_SESSION_TYPE
    SESSION_LONDON = 2,
    SESSION_NY_AM = 3,
    SESSION_NY_PM = 4
+};
+
+enum ENUM_PANEL_CORNER
+{
+   CORNER_TOP_LEFT = 0,      // Angolo in alto a sinistra
+   CORNER_TOP_RIGHT = 1,     // Angolo in alto a destra
+   CORNER_BOTTOM_LEFT = 2,   // Angolo in basso a sinistra
+   CORNER_BOTTOM_RIGHT = 3   // Angolo in basso a destra
 };
 
 //+------------------------------------------------------------------+
@@ -115,6 +123,21 @@ input string   RejectionSettings = "═══════ REJECTION CANDLE ═�
 input double   RejectionWickRatio = 0.5;       // Wick/Body Ratio Minimo
 input double   RejectionMinBody = 0.3;         // Body Minimo (% della candela)
 
+//--- Panel Settings
+input string   PanelSettings = "═══════ STATISTICS PANEL ═══════";
+input bool     ShowPanel = true;               // Mostra Pannello Statistiche
+input ENUM_PANEL_CORNER PanelCorner = CORNER_TOP_LEFT; // Posizione Pannello
+input int      PanelX = 10;                    // Offset X Pannello
+input int      PanelY = 30;                    // Offset Y Pannello
+input color    PanelBgColor = C'25,25,35';     // Colore Sfondo Pannello
+input color    PanelBorderColor = C'60,60,80'; // Colore Bordo Pannello
+input color    PanelTitleColor = clrGold;      // Colore Titolo
+input color    PanelTextColor = clrWhite;      // Colore Testo
+input color    PanelProfitColor = clrLime;     // Colore Profit
+input color    PanelLossColor = clrRed;        // Colore Loss
+input int      PanelFontSize = 9;              // Dimensione Font
+input string   PanelFontName = "Consolas";     // Nome Font
+
 //+------------------------------------------------------------------+
 //|                      GLOBAL VARIABLES                             |
 //+------------------------------------------------------------------+
@@ -144,6 +167,40 @@ bool waitingForEntry = false;
 bool rejectionDetected = false;
 datetime rejectionBarTime = 0;
 
+// Statistics Structure
+struct StatisticsData
+{
+   int      totalTrades;
+   int      winTrades;
+   int      lossTrades;
+   double   totalProfit;
+   double   totalLoss;
+   double   netProfit;
+   double   winRate;
+   double   profitFactor;
+   double   avgWin;
+   double   avgLoss;
+   double   maxDrawdown;
+   double   bestTrade;
+   double   worstTrade;
+   int      consecutiveWins;
+   int      consecutiveLosses;
+   int      maxConsecutiveWins;
+   int      maxConsecutiveLosses;
+   int      longTrades;
+   int      shortTrades;
+   int      longWins;
+   int      shortWins;
+};
+
+StatisticsData dailyStats;
+StatisticsData totalStats;
+datetime lastStatsUpdate = 0;
+int panelUpdateCounter = 0;
+
+// Panel Object Names
+string panelPrefix = "ICTPANEL_";
+
 //+------------------------------------------------------------------+
 //|                    INITIALIZATION                                 |
 //+------------------------------------------------------------------+
@@ -163,14 +220,29 @@ int OnInit()
    tradesThisDay = 0;
    lastTradeDay = 0;
 
+   // Inizializza statistiche
+   ResetStatistics(dailyStats);
+   ResetStatistics(totalStats);
+
+   // Calcola statistiche iniziali
+   CalculateStatistics();
+
+   // Crea pannello
+   if(ShowPanel)
+   {
+      CreatePanel();
+      UpdatePanel();
+   }
+
    // Info inizializzazione
    Print("═══════════════════════════════════════════════════");
-   Print("ICT Silver Bullet EA Inizializzato");
+   Print("ICT Silver Bullet EA v2.0 Inizializzato");
    Print("Simbolo: ", currentSymbol);
    Print("Lot Size: ", GetLotSize());
    Print("GMT Offset: ", GMT_Offset);
    Print("Risk: ", RiskPercent, "%");
    Print("R:R Range: 1:", RR_Min, " - 1:", RR_Max);
+   Print("Pannello Statistiche: ", (ShowPanel ? "ATTIVO" : "DISATTIVO"));
    Print("═══════════════════════════════════════════════════");
 
    return(INIT_SUCCEEDED);
@@ -181,6 +253,13 @@ int OnInit()
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
 {
+   // Rimuovi pannello
+   DeletePanel();
+
+   // Rimuovi oggetti FVG
+   ObjectDelete(0, "FVG_Zone");
+   ObjectDelete(0, "FVG_Label");
+
    Print("ICT Silver Bullet EA Rimosso. Motivo: ", reason);
 }
 
@@ -194,6 +273,18 @@ void OnTick()
 
    // Reset contatore giornaliero
    CheckDayReset();
+
+   // Aggiorna pannello ogni 10 tick
+   if(ShowPanel)
+   {
+      panelUpdateCounter++;
+      if(panelUpdateCounter >= 10)
+      {
+         CalculateStatistics();
+         UpdatePanel();
+         panelUpdateCounter = 0;
+      }
+   }
 
    // Verifica sessione attiva
    ENUM_SESSION_TYPE session = GetCurrentSession();
@@ -686,6 +777,10 @@ void ExecuteTrade(ENUM_BIAS_TYPE bias)
       Print("Trade #", tradesThisSession, " della sessione");
       Print("═══════════════════════════════════════════════════");
 
+      // Aggiorna statistiche
+      CalculateStatistics();
+      if(ShowPanel) UpdatePanel();
+
       // Reset FVG dopo trade
       ResetFVG();
    }
@@ -722,6 +817,463 @@ double CalculateLotSize(double slDistance)
    calculatedLot = MathMax(minLot, MathMin(maxLot, calculatedLot));
 
    return calculatedLot;
+}
+
+//+------------------------------------------------------------------+
+//|                STATISTICS FUNCTIONS                               |
+//+------------------------------------------------------------------+
+
+// Reset Statistics
+void ResetStatistics(StatisticsData &stats)
+{
+   stats.totalTrades = 0;
+   stats.winTrades = 0;
+   stats.lossTrades = 0;
+   stats.totalProfit = 0;
+   stats.totalLoss = 0;
+   stats.netProfit = 0;
+   stats.winRate = 0;
+   stats.profitFactor = 0;
+   stats.avgWin = 0;
+   stats.avgLoss = 0;
+   stats.maxDrawdown = 0;
+   stats.bestTrade = 0;
+   stats.worstTrade = 0;
+   stats.consecutiveWins = 0;
+   stats.consecutiveLosses = 0;
+   stats.maxConsecutiveWins = 0;
+   stats.maxConsecutiveLosses = 0;
+   stats.longTrades = 0;
+   stats.shortTrades = 0;
+   stats.longWins = 0;
+   stats.shortWins = 0;
+}
+
+// Calculate Statistics from Trade History
+void CalculateStatistics()
+{
+   // Reset stats
+   ResetStatistics(dailyStats);
+   ResetStatistics(totalStats);
+
+   datetime todayStart = StringToTime(TimeToString(TimeCurrent(), TIME_DATE));
+
+   int tempConsecWins = 0;
+   int tempConsecLosses = 0;
+   double runningProfit = 0;
+   double peakProfit = 0;
+
+   // Scan closed orders
+   for(int i = OrdersHistoryTotal() - 1; i >= 0; i--)
+   {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_HISTORY)) continue;
+      if(OrderMagicNumber() != MagicNumber) continue;
+      if(OrderSymbol() != Symbol()) continue;
+      if(OrderType() > OP_SELL) continue; // Skip pending orders
+
+      double profit = OrderProfit() + OrderSwap() + OrderCommission();
+      datetime closeTime = OrderCloseTime();
+      int orderType = OrderType();
+
+      // Total Stats
+      totalStats.totalTrades++;
+
+      if(orderType == OP_BUY) totalStats.longTrades++;
+      else totalStats.shortTrades++;
+
+      if(profit > 0)
+      {
+         totalStats.winTrades++;
+         totalStats.totalProfit += profit;
+         if(profit > totalStats.bestTrade) totalStats.bestTrade = profit;
+
+         if(orderType == OP_BUY) totalStats.longWins++;
+         else totalStats.shortWins++;
+
+         tempConsecWins++;
+         if(tempConsecWins > totalStats.maxConsecutiveWins)
+            totalStats.maxConsecutiveWins = tempConsecWins;
+         tempConsecLosses = 0;
+      }
+      else if(profit < 0)
+      {
+         totalStats.lossTrades++;
+         totalStats.totalLoss += MathAbs(profit);
+         if(profit < totalStats.worstTrade) totalStats.worstTrade = profit;
+
+         tempConsecLosses++;
+         if(tempConsecLosses > totalStats.maxConsecutiveLosses)
+            totalStats.maxConsecutiveLosses = tempConsecLosses;
+         tempConsecWins = 0;
+      }
+
+      // Drawdown calculation
+      runningProfit += profit;
+      if(runningProfit > peakProfit) peakProfit = runningProfit;
+      double drawdown = peakProfit - runningProfit;
+      if(drawdown > totalStats.maxDrawdown) totalStats.maxDrawdown = drawdown;
+
+      // Daily Stats
+      if(closeTime >= todayStart)
+      {
+         dailyStats.totalTrades++;
+
+         if(orderType == OP_BUY) dailyStats.longTrades++;
+         else dailyStats.shortTrades++;
+
+         if(profit > 0)
+         {
+            dailyStats.winTrades++;
+            dailyStats.totalProfit += profit;
+            if(profit > dailyStats.bestTrade) dailyStats.bestTrade = profit;
+
+            if(orderType == OP_BUY) dailyStats.longWins++;
+            else dailyStats.shortWins++;
+         }
+         else if(profit < 0)
+         {
+            dailyStats.lossTrades++;
+            dailyStats.totalLoss += MathAbs(profit);
+            if(profit < dailyStats.worstTrade) dailyStats.worstTrade = profit;
+         }
+      }
+   }
+
+   // Calculate derived stats - Total
+   totalStats.netProfit = totalStats.totalProfit - totalStats.totalLoss;
+   if(totalStats.totalTrades > 0)
+      totalStats.winRate = (double)totalStats.winTrades / totalStats.totalTrades * 100.0;
+   if(totalStats.totalLoss > 0)
+      totalStats.profitFactor = totalStats.totalProfit / totalStats.totalLoss;
+   if(totalStats.winTrades > 0)
+      totalStats.avgWin = totalStats.totalProfit / totalStats.winTrades;
+   if(totalStats.lossTrades > 0)
+      totalStats.avgLoss = totalStats.totalLoss / totalStats.lossTrades;
+
+   // Calculate derived stats - Daily
+   dailyStats.netProfit = dailyStats.totalProfit - dailyStats.totalLoss;
+   if(dailyStats.totalTrades > 0)
+      dailyStats.winRate = (double)dailyStats.winTrades / dailyStats.totalTrades * 100.0;
+   if(dailyStats.totalLoss > 0)
+      dailyStats.profitFactor = dailyStats.totalProfit / dailyStats.totalLoss;
+   if(dailyStats.winTrades > 0)
+      dailyStats.avgWin = dailyStats.totalProfit / dailyStats.winTrades;
+   if(dailyStats.lossTrades > 0)
+      dailyStats.avgLoss = dailyStats.totalLoss / dailyStats.lossTrades;
+
+   // Count open positions
+   int openTrades = 0;
+   double floatingPL = 0;
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
+      if(OrderMagicNumber() != MagicNumber) continue;
+      if(OrderSymbol() != Symbol()) continue;
+      if(OrderType() > OP_SELL) continue;
+
+      openTrades++;
+      floatingPL += OrderProfit() + OrderSwap() + OrderCommission();
+   }
+}
+
+//+------------------------------------------------------------------+
+//|                   PANEL FUNCTIONS                                 |
+//+------------------------------------------------------------------+
+
+// Create Panel
+void CreatePanel()
+{
+   int panelWidth = 280;
+   int panelHeight = 420;
+   int lineHeight = 18;
+   int startY = PanelY;
+   int startX = PanelX;
+
+   // Adjust for corner
+   int xDist = startX;
+   int yDist = startY;
+   ENUM_BASE_CORNER corner = CORNER_LEFT_UPPER;
+
+   switch(PanelCorner)
+   {
+      case CORNER_TOP_RIGHT:
+         corner = CORNER_RIGHT_UPPER;
+         break;
+      case CORNER_BOTTOM_LEFT:
+         corner = CORNER_LEFT_LOWER;
+         break;
+      case CORNER_BOTTOM_RIGHT:
+         corner = CORNER_RIGHT_LOWER;
+         break;
+      default:
+         corner = CORNER_LEFT_UPPER;
+   }
+
+   // Background
+   CreateRectLabel(panelPrefix + "BG", xDist, yDist, panelWidth, panelHeight, PanelBgColor, PanelBorderColor, corner);
+
+   // Title
+   int y = yDist + 8;
+   CreateLabel(panelPrefix + "Title", xDist + 10, y, "ICT SILVER BULLET EA v2.0", PanelTitleColor, PanelFontSize + 2, corner, true);
+
+   y += lineHeight + 5;
+   CreateLabel(panelPrefix + "Symbol", xDist + 10, y, "Symbol: " + Symbol(), PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "Session", xDist + 10, y, "Session: ---", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "Bias", xDist + 10, y, "Bias: ---", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "FVG", xDist + 10, y, "FVG: None", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "Spread", xDist + 10, y, "Spread: ---", PanelTextColor, PanelFontSize, corner);
+
+   // Separator
+   y += lineHeight + 5;
+   CreateLabel(panelPrefix + "Sep1", xDist + 10, y, "---------- TODAY ----------", clrDarkGray, PanelFontSize - 1, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayTrades", xDist + 10, y, "Trades: 0 (W:0 L:0)", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayWinRate", xDist + 10, y, "Win Rate: 0.0%", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayProfit", xDist + 10, y, "Profit: $0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayPF", xDist + 10, y, "Profit Factor: 0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayBest", xDist + 10, y, "Best: $0.00", PanelProfitColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "DayWorst", xDist + 10, y, "Worst: $0.00", PanelLossColor, PanelFontSize, corner);
+
+   // Separator
+   y += lineHeight + 5;
+   CreateLabel(panelPrefix + "Sep2", xDist + 10, y, "---------- TOTAL ----------", clrDarkGray, PanelFontSize - 1, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalTrades", xDist + 10, y, "Trades: 0 (W:0 L:0)", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalWinRate", xDist + 10, y, "Win Rate: 0.0%", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalProfit", xDist + 10, y, "Net Profit: $0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalPF", xDist + 10, y, "Profit Factor: 0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalDD", xDist + 10, y, "Max Drawdown: $0.00", PanelLossColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalBest", xDist + 10, y, "Best Trade: $0.00", PanelProfitColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "TotalWorst", xDist + 10, y, "Worst Trade: $0.00", PanelLossColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "ConsecWins", xDist + 10, y, "Max Consec Wins: 0", PanelProfitColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "ConsecLoss", xDist + 10, y, "Max Consec Loss: 0", PanelLossColor, PanelFontSize, corner);
+
+   // Separator
+   y += lineHeight + 5;
+   CreateLabel(panelPrefix + "Sep3", xDist + 10, y, "-------- ACCOUNT --------", clrDarkGray, PanelFontSize - 1, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "Balance", xDist + 10, y, "Balance: $0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "Equity", xDist + 10, y, "Equity: $0.00", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "OpenTrades", xDist + 10, y, "Open Trades: 0", PanelTextColor, PanelFontSize, corner);
+
+   y += lineHeight;
+   CreateLabel(panelPrefix + "FloatingPL", xDist + 10, y, "Floating P/L: $0.00", PanelTextColor, PanelFontSize, corner);
+
+   ChartRedraw();
+}
+
+// Create Rectangle Label (Background)
+void CreateRectLabel(string name, int x, int y, int width, int height, color bgColor, color borderColor, ENUM_BASE_CORNER corner)
+{
+   ObjectCreate(0, name, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+   ObjectSetInteger(0, name, OBJPROP_CORNER, corner);
+   ObjectSetInteger(0, name, OBJPROP_XDISTANCE, x);
+   ObjectSetInteger(0, name, OBJPROP_YDISTANCE, y);
+   ObjectSetInteger(0, name, OBJPROP_XSIZE, width);
+   ObjectSetInteger(0, name, OBJPROP_YSIZE, height);
+   ObjectSetInteger(0, name, OBJPROP_BGCOLOR, bgColor);
+   ObjectSetInteger(0, name, OBJPROP_BORDER_TYPE, BORDER_FLAT);
+   ObjectSetInteger(0, name, OBJPROP_COLOR, borderColor);
+   ObjectSetInteger(0, name, OBJPROP_WIDTH, 2);
+   ObjectSetInteger(0, name, OBJPROP_BACK, false);
+   ObjectSetInteger(0, name, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, name, OBJPROP_HIDDEN, true);
+}
+
+// Create Label
+void CreateLabel(string name, int x, int y, string text, color textColor, int fontSize, ENUM_BASE_CORNER corner, bool bold = false)
+{
+   ObjectCreate(0, name, OBJ_LABEL, 0, 0, 0);
+   ObjectSetInteger(0, name, OBJPROP_CORNER, corner);
+   ObjectSetInteger(0, name, OBJPROP_XDISTANCE, x);
+   ObjectSetInteger(0, name, OBJPROP_YDISTANCE, y);
+   ObjectSetString(0, name, OBJPROP_TEXT, text);
+   ObjectSetInteger(0, name, OBJPROP_COLOR, textColor);
+   ObjectSetInteger(0, name, OBJPROP_FONTSIZE, fontSize);
+   ObjectSetString(0, name, OBJPROP_FONT, bold ? PanelFontName + " Bold" : PanelFontName);
+   ObjectSetInteger(0, name, OBJPROP_BACK, false);
+   ObjectSetInteger(0, name, OBJPROP_SELECTABLE, false);
+   ObjectSetInteger(0, name, OBJPROP_HIDDEN, true);
+}
+
+// Update Panel
+void UpdatePanel()
+{
+   if(!ShowPanel) return;
+
+   // Current state
+   string sessionName = GetSessionName(currentSession);
+   ENUM_BIAS_TYPE bias = GetBias_M15();
+   string biasStr = (bias == BIAS_BULLISH) ? "BULLISH" : (bias == BIAS_BEARISH) ? "BEARISH" : "NONE";
+   color biasColor = (bias == BIAS_BULLISH) ? PanelProfitColor : (bias == BIAS_BEARISH) ? PanelLossColor : PanelTextColor;
+
+   string fvgStatus = "None";
+   if(activeFVG.isValid)
+   {
+      fvgStatus = (activeFVG.type == FVG_BULLISH ? "BULL" : "BEAR");
+      if(activeFVG.isMitigated) fvgStatus += " [MIT]";
+      if(activeFVG.hasRejection) fvgStatus += " [REJ]";
+   }
+
+   double spread = MarketInfo(Symbol(), MODE_SPREAD);
+
+   // Update labels
+   ObjectSetString(0, panelPrefix + "Session", OBJPROP_TEXT, "Session: " + sessionName);
+   ObjectSetString(0, panelPrefix + "Bias", OBJPROP_TEXT, "Bias: " + biasStr);
+   ObjectSetInteger(0, panelPrefix + "Bias", OBJPROP_COLOR, biasColor);
+   ObjectSetString(0, panelPrefix + "FVG", OBJPROP_TEXT, "FVG: " + fvgStatus);
+   ObjectSetString(0, panelPrefix + "Spread", OBJPROP_TEXT, "Spread: " + DoubleToString(spread, 0) + " pts");
+
+   // Daily Stats
+   ObjectSetString(0, panelPrefix + "DayTrades", OBJPROP_TEXT,
+      "Trades: " + IntegerToString(dailyStats.totalTrades) +
+      " (W:" + IntegerToString(dailyStats.winTrades) +
+      " L:" + IntegerToString(dailyStats.lossTrades) + ")");
+
+   ObjectSetString(0, panelPrefix + "DayWinRate", OBJPROP_TEXT,
+      "Win Rate: " + DoubleToString(dailyStats.winRate, 1) + "%");
+   ObjectSetInteger(0, panelPrefix + "DayWinRate", OBJPROP_COLOR,
+      dailyStats.winRate >= 50 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "DayProfit", OBJPROP_TEXT,
+      "Profit: $" + DoubleToString(dailyStats.netProfit, 2));
+   ObjectSetInteger(0, panelPrefix + "DayProfit", OBJPROP_COLOR,
+      dailyStats.netProfit >= 0 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "DayPF", OBJPROP_TEXT,
+      "Profit Factor: " + DoubleToString(dailyStats.profitFactor, 2));
+   ObjectSetInteger(0, panelPrefix + "DayPF", OBJPROP_COLOR,
+      dailyStats.profitFactor >= 1 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "DayBest", OBJPROP_TEXT,
+      "Best: $" + DoubleToString(dailyStats.bestTrade, 2));
+
+   ObjectSetString(0, panelPrefix + "DayWorst", OBJPROP_TEXT,
+      "Worst: $" + DoubleToString(dailyStats.worstTrade, 2));
+
+   // Total Stats
+   ObjectSetString(0, panelPrefix + "TotalTrades", OBJPROP_TEXT,
+      "Trades: " + IntegerToString(totalStats.totalTrades) +
+      " (W:" + IntegerToString(totalStats.winTrades) +
+      " L:" + IntegerToString(totalStats.lossTrades) + ")");
+
+   ObjectSetString(0, panelPrefix + "TotalWinRate", OBJPROP_TEXT,
+      "Win Rate: " + DoubleToString(totalStats.winRate, 1) + "%");
+   ObjectSetInteger(0, panelPrefix + "TotalWinRate", OBJPROP_COLOR,
+      totalStats.winRate >= 50 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "TotalProfit", OBJPROP_TEXT,
+      "Net Profit: $" + DoubleToString(totalStats.netProfit, 2));
+   ObjectSetInteger(0, panelPrefix + "TotalProfit", OBJPROP_COLOR,
+      totalStats.netProfit >= 0 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "TotalPF", OBJPROP_TEXT,
+      "Profit Factor: " + DoubleToString(totalStats.profitFactor, 2));
+   ObjectSetInteger(0, panelPrefix + "TotalPF", OBJPROP_COLOR,
+      totalStats.profitFactor >= 1 ? PanelProfitColor : PanelLossColor);
+
+   ObjectSetString(0, panelPrefix + "TotalDD", OBJPROP_TEXT,
+      "Max Drawdown: $" + DoubleToString(totalStats.maxDrawdown, 2));
+
+   ObjectSetString(0, panelPrefix + "TotalBest", OBJPROP_TEXT,
+      "Best Trade: $" + DoubleToString(totalStats.bestTrade, 2));
+
+   ObjectSetString(0, panelPrefix + "TotalWorst", OBJPROP_TEXT,
+      "Worst Trade: $" + DoubleToString(totalStats.worstTrade, 2));
+
+   ObjectSetString(0, panelPrefix + "ConsecWins", OBJPROP_TEXT,
+      "Max Consec Wins: " + IntegerToString(totalStats.maxConsecutiveWins));
+
+   ObjectSetString(0, panelPrefix + "ConsecLoss", OBJPROP_TEXT,
+      "Max Consec Loss: " + IntegerToString(totalStats.maxConsecutiveLosses));
+
+   // Account Info
+   ObjectSetString(0, panelPrefix + "Balance", OBJPROP_TEXT,
+      "Balance: $" + DoubleToString(AccountBalance(), 2));
+
+   ObjectSetString(0, panelPrefix + "Equity", OBJPROP_TEXT,
+      "Equity: $" + DoubleToString(AccountEquity(), 2));
+   ObjectSetInteger(0, panelPrefix + "Equity", OBJPROP_COLOR,
+      AccountEquity() >= AccountBalance() ? PanelProfitColor : PanelLossColor);
+
+   // Open trades and floating P/L
+   int openTrades = 0;
+   double floatingPL = 0;
+   for(int i = OrdersTotal() - 1; i >= 0; i--)
+   {
+      if(!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
+      if(OrderMagicNumber() != MagicNumber) continue;
+      if(OrderSymbol() != Symbol()) continue;
+      if(OrderType() > OP_SELL) continue;
+
+      openTrades++;
+      floatingPL += OrderProfit() + OrderSwap() + OrderCommission();
+   }
+
+   ObjectSetString(0, panelPrefix + "OpenTrades", OBJPROP_TEXT,
+      "Open Trades: " + IntegerToString(openTrades));
+
+   ObjectSetString(0, panelPrefix + "FloatingPL", OBJPROP_TEXT,
+      "Floating P/L: $" + DoubleToString(floatingPL, 2));
+   ObjectSetInteger(0, panelPrefix + "FloatingPL", OBJPROP_COLOR,
+      floatingPL >= 0 ? PanelProfitColor : PanelLossColor);
+
+   ChartRedraw();
+}
+
+// Delete Panel
+void DeletePanel()
+{
+   int totalObjects = ObjectsTotal(0);
+   for(int i = totalObjects - 1; i >= 0; i--)
+   {
+      string objName = ObjectName(0, i);
+      if(StringFind(objName, panelPrefix) == 0)
+      {
+         ObjectDelete(0, objName);
+      }
+   }
 }
 
 //+------------------------------------------------------------------+
@@ -852,6 +1404,7 @@ void CheckDayReset()
    {
       lastTradeDay = today;
       tradesThisDay = 0;
+      ResetStatistics(dailyStats);
       Print("Nuovo giorno di trading. Reset contatori.");
    }
 }
