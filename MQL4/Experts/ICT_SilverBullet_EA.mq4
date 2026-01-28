@@ -1265,10 +1265,10 @@ void UpdatePanel()
 // Delete Panel
 void DeletePanel()
 {
-   int totalObjects = ObjectsTotal(0);
+   int totalObjects = ObjectsTotal(0, 0, -1);
    for(int i = totalObjects - 1; i >= 0; i--)
    {
-      string objName = ObjectName(0, i);
+      string objName = ObjectName(0, i, 0, -1);
       if(StringFind(objName, panelPrefix) == 0)
       {
          ObjectDelete(0, objName);
